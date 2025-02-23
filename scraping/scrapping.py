@@ -10,11 +10,12 @@ def scrape_flashscore():
     with sync_playwright() as p:
         # create a browser instance and load the page of the given url
         browser = p.chromium.launch(headless=True) 
-        page = browser.new_page()
-        page.goto("https://www.flashscore.co.ke/", timeout=60000)
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto("https://www.flashscore.co.ke/")
 
         # choose selector and wait for it to load
-        page.wait_for_selector(".event__match", timeout=10000)
+        page.wait_for_selector(".event__match")
 
         # Get events
         events = page.locator(".event__match").all()
@@ -25,7 +26,8 @@ def scrape_flashscore():
 
             # get match details
             scrape_match_details(browser=browser, href=href)
-            
+
+        context.close()    
         browser.close()
 
 
