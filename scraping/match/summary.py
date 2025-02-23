@@ -10,12 +10,7 @@ def scrape_match_details(browser, href):
     match_page.goto(href)
     match_page.wait_for_selector(".duelParticipant")
 
-    # buttons
-    buttons = match_page.locator(".detailOver a").all()
-    
-    #match_details(match_page=match_page)
-    if len(buttons) > 3:
-        odds_href = href[:href.rfind('#')] + buttons[2].get_attribute("href")
-        h2h(browser=browser, href=odds_href)
+    # Navigate to h2h section
+    h2h(browser=browser, href=href[:href.rfind('#')] + "#/h2h")
 
     match_page.close()
