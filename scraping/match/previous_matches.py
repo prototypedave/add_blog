@@ -36,47 +36,32 @@ def get_h2h(h2h):
     })
 
 """
-    Returns overall h2h section
+    Returns h2h data
 """
-def get_overall_h2h(page, href):
-    href = href + "/overall"
+def get_h2h(page, href):
     page.goto(href)
     page.wait_for_selector(".h2h__section")
 
-    overall = page.locator(".h2h__section").all()
-    ovr_h2h = []
+    h2h = page.locator(".h2h__section").all()
+    _h2h = []
     
-    for h2h in overall:
-        ovr_h2h.append(get_h2h(h2h))
+    for h2h in h2h:
+        _h2h.append(get_h2h(h2h))
 
-    return ovr_h2h
-
-"""
-    Returns H2H for home team
-"""
-def get_home_h2h(page, href):
-    href = href + "/home"
-    page.goto(href)
-    page.wait_for_selector(".h2h__section")
-
-    home = page.locator(".h2h__section").all()
-    home_h2h = []
-
-    for h2h in home:
-        home_h2h.append(get_h2h(h2h))
-
-    return home_h2h
+    return _h2h
 
 """
-    Returns H2H data
+    Returns all fulltime h2h data
 """
 def h2h(browser, href):
     h2h_page = browser.new_page()
+    return ({
+        'type': 'fulltime',
+        'ovr': get_h2h(page=h2h_page, href = href + "/overall"), # Overall h2h
+        'home': get_h2h(page=h2h_page, href = href + "/home"), # Home team h2h
+        'away': get_h2h(page=h2h_page, href = href + "/away"), # Away team h2h
+    })
     
-    # Overall head to head data
-    ovr = get_overall_h2h(page=h2h_page, href=href)
-    home = get_home_h2h(page=h2h_page, href=href)
-    print(home)
     
     
 
