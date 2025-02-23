@@ -22,7 +22,7 @@ def get_matches(row):
 """
     Returns a list of h2h matches
 """
-def get_h2h(h2h):
+def get_h2h_object(h2h):
     head = h2h.locator("div").first.inner_text().strip()
     previous = h2h.locator(".rows .h2h__row").all()
     matches = []
@@ -46,7 +46,7 @@ def get_h2h(page, href):
     _h2h = []
     
     for h2h in h2h:
-        _h2h.append(get_h2h(h2h))
+        _h2h.append(get_h2h_object(h2h))
 
     return _h2h
 

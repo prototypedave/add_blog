@@ -1,12 +1,29 @@
-def extract_odds(match_page, href):
-    match_page.goto(href, timeout=60000)
-    match_page.wait_for_load_state("networkidle") 
+def odds(browser, href):
+    page = browser.new_page()
 
-    locator = match_page.locator("//div[1]/div/div[8]/div/div[3]/div/div[2]/div[1]/a[1]/span")
+    # 1x2 fulltime
+    page.goto(href + '/1x2-odds/full-time')
+    page.wait_for_selector(".filterOver")
+
+    row = page.locator(".ui-table__row").first
+    cells = row.locator(".oddsCell__odd").all()
+    if len(cells) == 3:
+        return({
+            'home': cells[0].inner_text().strip(),
+            'draw': cells[1].inner_text().strip(),
+            'away': cells[2].inner_text().strip()
+        })
     
-    locator.wait_for(state="visible", timeout=10000)  
+    return None
 
-    home = locator.inner_text().strip() 
-    print(home)
+    # over/under
 
+    # BTTS
+
+    # DC
+
+    # HC
     
+    
+    
+
