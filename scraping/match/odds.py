@@ -38,6 +38,20 @@ def over_under_odds(page, href):
     return over_under
 
 
+def both_team_to_score_odds(page, href):
+    page.goto(href)
+    page.wait_for_selector(".filterOver")
+    
+    try:
+        # Assuming oddsCell__odd will always be two on this page
+        return({
+            'yes': page.locator(".ui-table__row .oddsCell__odd").first.inner_text().strip(),
+            'no' : page.locator(".ui-table__row .oddsCell__odd").last.inner_text().strip()
+        }) 
+    except Exception:
+        return None
+
+
 def odds(browser, href):
     page = browser.new_page()
 
@@ -51,10 +65,12 @@ def odds(browser, href):
     over_under_1st_half = over_under_odds(page=page, href=href + '/over-under/1st-half')
     over_under_2nd_half = over_under_odds(page=page, href=href + '/over-under/2nd-half')
 
-    return over_under_1st_half
-
     # Both teams to Score
+    btts_full_time = both_team_to_score_odds(page=page, href=href + '/both-teams-to-score/full-time')
+    btts_1st_half = both_team_to_score_odds(page=page, href=href + '/both-teams-to-score/1st-half')
+    btts_2nd_half = both_team_to_score_odds(page=page, href=href + '/both-teams-to-score/2nd-half')
 
+    return btts_1st_half
 
     # BTTS
 
