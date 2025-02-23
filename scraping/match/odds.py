@@ -1,16 +1,18 @@
 def final_results_odds(page, href):
     page.goto(href)
     page.wait_for_selector(".filterOver")
-    row = page.locator(".ui-table__row").first
-    cells = row.locator(".oddsCell__odd").all()
-    if len(cells) == 3:
-        return({
-            'home': cells[0].inner_text().strip(),
-            'draw': cells[1].inner_text().strip(),
-            'away': cells[2].inner_text().strip()
-        })
-    
-    return None
+
+    try:
+        row = page.locator(".ui-table__row").first
+        cells = row.locator(".oddsCell__odd").all()
+        if len(cells) == 3:
+            return({
+                'home': cells[0].inner_text().strip(),
+                'draw': cells[1].inner_text().strip(),
+                'away': cells[2].inner_text().strip()
+            })
+    except Exception:
+        return None
 
 
 def over_under_odds(page, href):
@@ -50,6 +52,23 @@ def both_team_to_score_odds(page, href):
         }) 
     except Exception:
         return None
+    
+
+def double_chance_results_odds(page, href):
+    page.goto(href)
+    page.wait_for_selector(".filterOver")
+
+    try:
+        row = page.locator(".ui-table__row").first
+        cells = row.locator(".oddsCell__odd").all()
+        if len(cells) == 3:
+            return({
+                '1x': cells[0].inner_text().strip(),
+                '12': cells[1].inner_text().strip(),
+                'x2': cells[2].inner_text().strip()
+            })
+    except Exception:
+        return None
 
 
 def odds(browser, href):
@@ -70,11 +89,12 @@ def odds(browser, href):
     btts_1st_half = both_team_to_score_odds(page=page, href=href + '/both-teams-to-score/1st-half')
     btts_2nd_half = both_team_to_score_odds(page=page, href=href + '/both-teams-to-score/2nd-half')
 
-    return btts_1st_half
+    # Double chance
+    dc_full_time = double_chance_results_odds(page=page, href=href + '/double-chance/full-time')
+    dc_1st_half = double_chance_results_odds(page=page, href=href + '/double-chance/1st-half')
+    dc_2nd_half = double_chance_results_odds(page=page, href=href + '/double_chance/2nd-half')
 
-    # BTTS
-
-    # DC
+    return dc_1st_half
 
     # HC
     
