@@ -19,23 +19,18 @@ def over_under_odds(page, href):
     page.goto(href)
     page.wait_for_selector(".filterOver")
     rows = page.locator(".ui-table__row").all()
-    print(len(rows))
 
     over_under = []
     
     for row in rows:
         try:
-            total = row.locator(".oddsCell__noOddsCell").first.inner_text().strip()
-            over = row.locator(".oddsCell__odd").first.inner_text().strip()
-            under = row.locator(".oddsCell__odd").last.inner_text().strip()
+            over_under.append({
+                'total' : row.locator(".oddsCell__noOddsCell").first.inner_text().strip(),
+                'over' : row.locator(".oddsCell__odd").first.inner_text().strip(),
+                'under' : row.locator(".oddsCell__odd").last.inner_text().strip()
+            })
         except Exception:
             continue
-        
-        over_under.append({
-            'total': total,
-            'over': over,
-            'under': under
-        })
         
     return over_under
 
@@ -69,35 +64,67 @@ def double_chance_results_odds(page, href):
             })
     except Exception:
         return None
+    
+
+def handicap_odds(page, href):
+    page.goto(href)
+    page.wait_for_selector(".filterOver")
+    rows = page.locator(".ui-table__row").all()
+
+    handicap = []
+    
+    for row in rows:
+        try:
+            handicap.append({
+                'handicap': row.locator(".oddsCell__noOddsCell").first.inner_text().strip(),
+                'home': row.locator(".oddsCell__odd").first.inner_text().strip(),
+                'away': row.locator(".oddsCell__odd").last.inner_text().strip()
+            }) 
+        except Exception:
+            continue
+
+    return handicap
+
+
+def arrange_objects(func, page, href, mkt):
+    # Full time
+    ft = func(page, href + '/' + mkt + '/' + 'full-time')
+
+    # first half
+    h1 = func(page, href + '/' + mkt + '/' + '1st-half')
+
+    # second half
+    h2 = func(page, href + '/' + mkt + '/' + '2nd-half')
+
+    return ({
+        'full_time' : ft,
+        'first_half' : h1,
+        'second_half' : h2
+    })
 
 
 def odds(browser, href):
     page = browser.new_page()
 
     # Final results odds
-    full_time = final_results_odds(page=page, href=href + '/1x2-odds/full-time')
-    first_half = final_results_odds(page=page, href=href + '/1x2-odds/1st-half')
-    second_half = final_results_odds(page=page, href=href + '/1x2-odds/2nd-half')
+    final_results = arrange_objects(final_results_odds, page, href, '1x2-odds')
 
     # Over under
-    over_under_full_time = over_under_odds(page=page, href=href + '/over-under/full-time')
-    over_under_1st_half = over_under_odds(page=page, href=href + '/over-under/1st-half')
-    over_under_2nd_half = over_under_odds(page=page, href=href + '/over-under/2nd-half')
-
+    over_under = arrange_objects(over_under_odds, page, href, 'over-under')
+   
     # Both teams to Score
-    btts_full_time = both_team_to_score_odds(page=page, href=href + '/both-teams-to-score/full-time')
-    btts_1st_half = both_team_to_score_odds(page=page, href=href + '/both-teams-to-score/1st-half')
-    btts_2nd_half = both_team_to_score_odds(page=page, href=href + '/both-teams-to-score/2nd-half')
-
+    both_team_to_score = arrange_objects(both_team_to_score_odds, page, href, 'both-teams-to-score')
+    
     # Double chance
-    dc_full_time = double_chance_results_odds(page=page, href=href + '/double-chance/full-time')
-    dc_1st_half = double_chance_results_odds(page=page, href=href + '/double-chance/1st-half')
-    dc_2nd_half = double_chance_results_odds(page=page, href=href + '/double_chance/2nd-half')
-
-    return dc_1st_half
-
-    # HC
+    double_chance = arrange_objects(double_chance_results_odds, page, href, 'double-chance')
     
+    # Handicap
+    handicap = arrange_objects(handicap_odds, page, href, 'asian-handicap')
     
-    
-
+    return ({
+      'result' : final_results,
+      'over/under' : over_under,
+      'BTTS' : both_team_to_score,
+      'DC' : double_chance,
+      'handicap' : handicap  
+    })
