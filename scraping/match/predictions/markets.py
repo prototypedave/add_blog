@@ -1,5 +1,6 @@
 from groq import Groq
 import os
+import json
 
 client = Groq(
     api_key=os.environ.get("GROQ_API_KEY"),
@@ -22,5 +23,14 @@ def team_form(home, away):
         stop=None,
     )
 
+    response_text = ""  # Initialize an empty string to store the response
+
     for chunk in completion:
-        print(chunk.choices[0].delta.content or "", end="")
+        if chunk.choices[0].delta.content:
+            response_text += chunk.choices[0].delta.content  # Append content to the variable
+
+    try:
+        response_json = json.loads(response_text.strip())  # Convert the accumulated text to JSON
+        return response_json
+    except json.JSONDecodeError:
+        return {}
