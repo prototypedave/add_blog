@@ -11,4 +11,4 @@ def match_details(match_page):
         'time': time
     }
 
-    print(match_data)
+    return match_data

@@ -1,6 +1,7 @@
 from .match_details import match_details
 from .h2h import h2h
 from .odds import odds
+from .predictions.predict import get_prediction
 
 def scrape_match_details(browser, href):
     """
@@ -11,11 +12,14 @@ def scrape_match_details(browser, href):
     match_page.goto(href)
     match_page.wait_for_selector(".duelParticipant")
 
+    match_data = match_details(match_page=match_page)
+    get_prediction(match_data)
+
     # Navigate to h2h section
     #fulltime_h2h = h2h(browser=browser, href=href[:href.rfind('#')] + "#/h2h")
     
     # Navigate to odds section
-    odd = odds(browser=browser, href=href[:href.rfind('#')] + "#/odds-comparison")
-    print(odd)
+    #odd = odds(browser=browser, href=href[:href.rfind('#')] + "#/odds-comparison")
+    #print(odd)
 
     match_page.close()
