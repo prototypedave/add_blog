@@ -1,4 +1,5 @@
-from .markets import team_form, injury_predictions
+from .markets import team_form
+from .injury import injury_predictions
 
 def get_prediction(data):
     pred_form = team_form(data.get('home'), data.get('away'))
