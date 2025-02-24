@@ -6,13 +6,14 @@ client = Groq(
     api_key=os.environ.get("GROQ_API_KEY"),
 )
 
-def tactical_prediction(home, away):
+
+def predict_discipline(home, away):
     completion = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
             {
                 "role": "user",
-                "content": f"You are one amongst the top most betting experts in the world with almost 100% win rate. You are tasked to give betting analysis and predictions based on tactical match ups and playing styles of different teams. On each game given analyse each teams tactical and playing styles and identify markets with high win probability based on the report and markets to avoid and return a json object with the following keys: 'markets to choose', 'markets to avoid', 'reason'. Note: You are only to return the object and no extra word.\nProvided: {home} v {away}"
+                "content": f"You are the top most sports betting expert with almost 100% win rate. You are tasked to analyze the impact a referee that will officate a certain match has including cards given penalities and so on by the referee. You are to also analze team discipline trends. From that analysis you are to find the best market (yellow cards, penalties and/or set piece goals) that will guarantee almost 100% chance of winning. Your response should be a json object with the following keys:'market to bet', 'market to avoid''reason'. Note only return an object and no extra word\nProvided: {home} v {away}"
             }
         ],
         temperature=1,
@@ -33,3 +34,4 @@ def tactical_prediction(home, away):
         return response_json
     except json.JSONDecodeError:
         return {}
+
