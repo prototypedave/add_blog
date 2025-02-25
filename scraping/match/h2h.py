@@ -1,6 +1,7 @@
 from .stats.btts import get_btts_score, get_btts_score_ovr
 from .stats.nobtts import get_ng_score, get_ng_score_ovr
 from .stats.over25 import get_over25_ovr, get_over25_score
+from .stats.under25 import get_under25_ovr, get_under25_score
 
 """
     Helper function
@@ -70,6 +71,9 @@ def h2h(browser, href):
     pct = get_over25_ovr(get_h2h(page=h2h_page, href = href + "/overall"))
     pct1 = get_over25_score(get_h2h(page=h2h_page, href = href + "/home"))
     pct2 = get_over25_score(get_h2h(page=h2h_page, href = href + "/away"))
+    pct = get_under25_ovr(get_h2h(page=h2h_page, href = href + "/overall"))
+    pct1 = get_under25_score(get_h2h(page=h2h_page, href = href + "/home"))
+    pct2 = get_under25_score(get_h2h(page=h2h_page, href = href + "/away"))
     print(pct2)
     
     """return ({
