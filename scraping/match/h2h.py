@@ -1,4 +1,5 @@
 from .stats.btts import get_btts_score, get_btts_score_ovr
+from .stats.nobtts import get_ng_score, get_ng_score_ovr
 
 """
     Helper function
@@ -62,6 +63,9 @@ def h2h(browser, href):
     pct = get_btts_score_ovr(get_h2h(page=h2h_page, href = href + "/overall"))
     pct1 = get_btts_score(get_h2h(page=h2h_page, href = href + "/home"))
     pct2 = get_btts_score(get_h2h(page=h2h_page, href = href + "/away"))
+    pct = get_ng_score_ovr(get_h2h(page=h2h_page, href = href + "/overall"))
+    pct1 = get_ng_score(get_h2h(page=h2h_page, href = href + "/home"))
+    pct2 = get_ng_score(get_h2h(page=h2h_page, href = href + "/away"))
     print(pct2)
     
     """return ({
