@@ -1,3 +1,5 @@
+from .stats.btts import get_btts_score, get_btts_score_ovr
+
 """
     Helper function
 """
@@ -50,18 +52,25 @@ def get_h2h(page, href):
 
     return _h2h
 
+
+
 """
     Returns all fulltime h2h data
 """
 def h2h(browser, href):
     h2h_page = browser.new_page()
-    return ({
+    pct = get_btts_score_ovr(get_h2h(page=h2h_page, href = href + "/overall"))
+    pct1 = get_btts_score(get_h2h(page=h2h_page, href = href + "/home"))
+    pct2 = get_btts_score(get_h2h(page=h2h_page, href = href + "/away"))
+    print(pct2)
+    
+    """return ({
         'type': 'fulltime',
         'ovr': get_h2h(page=h2h_page, href = href + "/overall"), # Overall h2h
         'home': get_h2h(page=h2h_page, href = href + "/home"), # Home team h2h
         'away': get_h2h(page=h2h_page, href = href + "/away"), # Away team h2h
-    })
+    })"""
     
-    
+
     
 

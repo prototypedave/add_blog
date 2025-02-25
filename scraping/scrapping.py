@@ -1,5 +1,4 @@
 from playwright.sync_api import sync_playwright
-import pandas as pd
 from match.summary import scrape_match_details
 
 
@@ -25,8 +24,10 @@ def scrape_flashscore():
             href = match_link.get_attribute("href")
 
             # get match details
-            scrape_match_details(browser=browser, href=href)
+            data = scrape_match_details(browser=browser, href=href)
+            
 
+        
         context.close()    
         browser.close()
 
