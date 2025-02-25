@@ -2,12 +2,20 @@ def get_pct_score(matches):
     count = 0
     percent = 0
     for team in matches:
-        a, b = map(int, team.get('result').split('-'))
-        if a or b == 0:
-            count+=1
-            percent=count/len(matches)*100
+        result = team.get('result', '').strip() 
+        if result and '-' in result:  
+            try:
+                a, b = map(int, result.split('-')) 
+                if a or b == 0:
+                    count+=1
+                    percent=count/len(matches)*100
+            except ValueError:
+                continue
+        else:
+            continue  
     
     return percent
+
 
 def get_ng_score_ovr(result):
     # Home team

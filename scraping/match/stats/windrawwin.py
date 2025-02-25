@@ -2,10 +2,17 @@ def get_pct_home(matches):
     count = 0
     percent = 0
     for team in matches:
-        a, b = map(int, team.get('result').split('-'))
-        if a > b:
-            count+=1
-            percent=count/len(matches)*100
+        result = team.get('result', '').strip() 
+        if result and '-' in result:  
+            try:
+                a, b = map(int, result.split('-')) 
+                if a > b:
+                    count+=1
+                    percent=count/len(matches)*100
+            except ValueError:
+                continue
+        else:
+            continue  
     
     return percent
 
@@ -14,10 +21,17 @@ def get_pct_draw(matches):
     count = 0
     percent = 0
     for team in matches:
-        a, b = map(int, team.get('result').split('-'))
-        if a == b:
-            count+=1
-            percent=count/len(matches)*100
+        result = team.get('result', '').strip() 
+        if result and '-' in result:  
+            try:
+                a, b = map(int, result.split('-')) 
+                if a == b:
+                    count+=1
+                    percent=count/len(matches)*100
+            except ValueError:
+                continue
+        else:
+            continue  
     
     return percent
 
@@ -25,10 +39,17 @@ def get_pct_away(matches):
     count = 0
     percent = 0
     for team in matches:
-        a, b = map(int, team.get('result').split('-'))
-        if a < b:
-            count+=1
-            percent=count/len(matches)*100
+        result = team.get('result', '').strip() 
+        if result and '-' in result:  
+            try:
+                a, b = map(int, result.split('-')) 
+                if a < b:
+                    count+=1
+                    percent=count/len(matches)*100
+            except ValueError:
+                continue
+        else:
+            continue  
     
     return percent
 
