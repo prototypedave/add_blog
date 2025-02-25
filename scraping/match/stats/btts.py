@@ -6,7 +6,7 @@ def get_pct_score(matches):
         if result and '-' in result:  
             try:
                 a, b = map(int, result.split('-')) 
-                if a and b > 0:
+                if a > 0 and b > 0:
                     count+=1
                     percent=count/len(matches)*100
             except ValueError:

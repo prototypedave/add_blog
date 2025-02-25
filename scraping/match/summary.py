@@ -20,10 +20,11 @@ def scrape_match_details(browser, href):
     raw_data = find_perfect_market(stats)
 
     if datetime.strptime(match_data.get('time'), "%d.%m.%Y %H:%M") > datetime.now():
+        print(raw_data.get('predict'))
         if raw_data.get('predict'):
             prediction = predict(match_data.get('home'), match_data.get('away'), raw_data.get('predict'))
             print(f"{match_data.get('home')} : {prediction} : {raw_data.get('markets')}")
-
+    
     
     
     

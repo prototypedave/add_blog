@@ -5,8 +5,8 @@ def get_pct_score(matches):
         result = team.get('result', '').strip() 
         if result and '-' in result:  
             try:
-                a, b = map(int, result.split('-')) 
-                if a or b == 0:
+                a, b = map(int, result.split('-'))
+                if a == 0 and b == 0:
                     count+=1
                     percent=count/len(matches)*100
             except ValueError:
