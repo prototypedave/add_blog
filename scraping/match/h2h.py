@@ -64,20 +64,23 @@ def organize_stats(func, func2, func3, page, ovr, home, away):
     return {
         'ovr' : func(get_h2h(page, ovr)),
         'home' : func2(get_h2h(page, home)),
-        'away': (func3(get_h2h(page, away)) if 'func3' in globals() else func2(get_h2h(page, away)))
+        'away': func3(get_h2h(page, home)),
     }
 
+"""
+    Returns a given match statistical data for the last 5 games
+"""
 def get_stats(h2h_page, ovr, home, away):
     return ({
-        'btts_stats' : organize_stats(get_btts_score_ovr, get_btts_score, None, h2h_page, ovr, home, away),
-        'ng_stats' : organize_stats(get_ng_score_ovr, get_ng_score, None, h2h_page, ovr, home, away),
-        'over25_stats' : organize_stats(get_over25_ovr, get_over25_score, None, h2h_page, ovr, home, away),
-        'under25_stats' : organize_stats(get_under25_ovr, get_under25_score, None, h2h_page, ovr, home, away),
+        'btts_stats' : organize_stats(get_btts_score_ovr, get_btts_score, get_btts_score, h2h_page, ovr, home, away),
+        'ng_stats' : organize_stats(get_ng_score_ovr, get_ng_score, get_btts_score, h2h_page, ovr, home, away),
+        'over25_stats' : organize_stats(get_over25_ovr, get_over25_score, get_btts_score, h2h_page, ovr, home, away),
+        'under25_stats' : organize_stats(get_under25_ovr, get_under25_score, get_btts_score, h2h_page, ovr, home, away),
         'winDrawWin_stats' : organize_stats(get_1x2_ovr, get_home_score, get_away_score, h2h_page, ovr, home, away)
     })
 
 """
-    Returns all fulltime h2h data
+    Returns all h2h data
 """
 def h2h(browser, href):
     h2h_page = browser.new_page()
@@ -86,14 +89,9 @@ def h2h(browser, href):
     away = href + "/away"
 
     stats = get_stats(h2h_page, ovr, home, away)
-    print(stats)
     
-    """return ({
-        'type': 'fulltime',
-        'ovr': get_h2h(page=h2h_page, href = href + "/overall"), # Overall h2h
-        'home': get_h2h(page=h2h_page, href = href + "/home"), # Home team h2h
-        'away': get_h2h(page=h2h_page, href = href + "/away"), # Away team h2h
-    })"""
+    return stats
+    
     
 
     
