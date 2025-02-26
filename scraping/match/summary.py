@@ -21,7 +21,7 @@ def scrape_match_details(browser, href):
     stats = h2h(browser=browser, href=href[:href.rfind('#')] + "#/h2h")
     raw_data = find_perfect_market(stats)
     expected_mkts = perfect_options(stats)
-    print(get_winner(stats))
+    print(stats)
 
     """if datetime.strptime(match_data.get('time'), "%d.%m.%Y %H:%M") > datetime.now():
         if raw_data.get('predict'):
