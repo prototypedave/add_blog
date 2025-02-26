@@ -5,7 +5,7 @@ from .predictions.predict import get_prediction
 from .models.markets import find_perfect_market
 from .automation.groq_assistant import predict
 from .models.accumulators import perfect_options
-from .models.algorithm import get_winner
+from .models.algorithm import prediction_markets
 from datetime import datetime
 
 def scrape_match_details(browser, href):
@@ -19,15 +19,15 @@ def scrape_match_details(browser, href):
 
     match_data = match_details(match_page=match_page)
     stats = h2h(browser=browser, href=href[:href.rfind('#')] + "#/h2h")
-    raw_data = find_perfect_market(stats)
+    #raw_data = find_perfect_market(stats)
     expected_mkts = perfect_options(stats)
-    print(stats)
+    mkts = prediction_markets(stats)
 
-    """if datetime.strptime(match_data.get('time'), "%d.%m.%Y %H:%M") > datetime.now():
-        if raw_data.get('predict'):
-            prediction = predict(match_data.get('home'), match_data.get('away'), raw_data.get('predict'))
-            print(f"{match_data.get('home')} : {prediction} : {raw_data.get('markets')} : {expected_mkts}")
-    """
+    if datetime.strptime(match_data.get('time'), "%d.%m.%Y %H:%M") > datetime.now():
+        if mkts:
+            prediction = predict(match_data.get('home'), match_data.get('away'), mkts)
+            print(f"{match_data.get('home')} : {prediction} : {mkts} : {expected_mkts}")
+    
     
     
     

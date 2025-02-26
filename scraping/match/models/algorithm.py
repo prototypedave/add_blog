@@ -43,44 +43,41 @@ def get_winner(stats):
     return ""
             
 
-def get_btts(stats):
-    home_btts = stats.get('btts_stats').get('ovr').get('home')
-    away_btts = stats.get('btts_stats').get('ovr').get('away')
-    h2h_btts = stats.get('btts_stats').get('ovr').get('h2h')
-    home_home_btts = stats.get('btts_stats').get('home').get('team')
-    h2h_home = stats.get('btts_stats').get('home').get('h2h')
-    away_away_btts = stats.get('btts_stats').get('away').get('team')
+def get_other_markets(stats, mkt, pred):
+    home_ou = stats.get(mkt).get('ovr').get('home')
+    away_ou = stats.get(mkt).get('ovr').get('away')
+    h2h_ou = stats.get(mkt).get('ovr').get('h2h')
+    home_home_ou = stats.get(mkt).get('home').get('team')
+    h2h_home = stats.get(mkt).get('home').get('h2h')
+    away_away_ou = stats.get(mkt).get('away').get('team')
 
-    if (home_btts > 69 or away_btts > 69) and h2h_btts > 69:
-        return 'btts yes'
+    if (home_ou > 69 or away_ou > 69) and h2h_ou > 69:
+        return pred
     
-    if (home_home_btts > 69 or away_away_btts > 69) and h2h_home > 69:
-        return 'btts yes' 
+    if (home_home_ou > 69 or away_away_ou > 69) and h2h_home > 69:
+        return pred
 
-    if h2h_btts > 90:
-        return 'btts yes'
+    if h2h_ou > 90:
+        return pred
 
     return '' 
 
 
-def get_no_btts(stats):
-    home_no_btts = stats.get('ng_stats').get('ovr').get('home')
-    away_no_btts = stats.get('ng_stats').get('ovr').get('away')
-    h2h_no_btts = stats.get('ng_stats').get('ovr').get('h2h')
-    home_home_no_btts = stats.get('ng_stats').get('home').get('team')
-    h2h_home = stats.get('ng_stats').get('home').get('h2h')
-    away_away_no_btts = stats.get('ng_stats').get('away').get('team')
-
-    if (home_no_btts > 69 or away_no_btts > 69) and h2h_no_btts > 69:
-        return 'btts yes'
+def prediction_markets(stats):
+    markets = []
+    if get_winner(stats):
+        markets.append(get_winner(stats))
     
-    if (home_home_no_btts > 69 or away_away_no_btts > 69) and h2h_home > 69:
-        return 'btts yes' 
+    if get_other_markets(stats, 'btts_stats', 'btts yes'):
+        markets.append(get_other_markets(stats, 'btts_stats', 'btts yes'))
 
-    if h2h_no_btts > 90:
-        return 'btts yes'
+    if get_other_markets(stats, 'ng_stats', 'btts no'):
+        markets.append(get_other_markets(stats, 'ng_stats', 'btts no'))
 
-    return '' 
+    if get_other_markets(stats, 'over25_stats', 'over 2.5'):
+        markets.append(get_other_markets(stats, 'over25_stats', 'over 2.5'))
 
+    if get_other_markets(stats, 'under25_stats', 'under 2.5'):
+        markets.append(get_other_markets(stats, 'under25_stats', 'under 2.5'))
 
-
+    return markets
