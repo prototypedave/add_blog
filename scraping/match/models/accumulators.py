@@ -1,5 +1,3 @@
-from .algorithms import perfect_stats, on_form
-
 def get_record(stats, mkt, type, home, away):
     stat = stats.get(mkt).get(type)
     if stat.get(home) > 70 and stat.get(away) < 30:
@@ -55,5 +53,8 @@ def perfect_options(stats):
     markets = get_other_stats(stats, 'ng_stats', 'ovr', markets, 'no btts')
 
     return markets
+
+
+
 
 
