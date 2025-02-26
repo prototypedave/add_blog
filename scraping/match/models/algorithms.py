@@ -59,6 +59,7 @@ def on_form(stats):
 def on_form_h2h(stats):
     home_data = stats.get('winDrawWin_stats').get('ovr').get('h2h').get('home')
     away_data = stats.get('winDrawWin_stats').get('ovr').get('h2h').get('away')
+    
     return ({
         'home_win': home_data > 90,
         'away_win': away_data > 90,

@@ -18,7 +18,7 @@ def scrape_flashscore():
 
         # Get events
         events = page.locator(".event__match").all()
-        events  = events[::-1]
+        #events  = events[::-1]
         
         for event in events:
             match_link = event.locator("a").first
