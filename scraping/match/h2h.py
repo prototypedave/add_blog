@@ -3,6 +3,7 @@ from .stats.nobtts import get_ng_score, get_ng_score_ovr
 from .stats.over25 import get_over25_ovr, get_over25_score
 from .stats.under25 import get_under25_ovr, get_under25_score
 from .stats.windrawwin import get_away_score, get_home_score, get_1x2_ovr 
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 """
     Helper function
@@ -45,16 +46,19 @@ def get_h2h_object(h2h):
     Returns h2h data
 """
 def get_h2h(page, href):
-    page.goto(href)
-    page.wait_for_selector(".h2h__section")
+    try:
+        page.goto(href)
+        page.wait_for_selector(".h2h__section")
 
-    h2h = page.locator(".h2h__section").all()
-    _h2h = []
-    
-    for h2h in h2h:
-        _h2h.append(get_h2h_object(h2h))
+        h2h = page.locator(".h2h__section").all()
+        _h2h = []
+        
+        for h2h in h2h:
+            _h2h.append(get_h2h_object(h2h))
 
-    return _h2h
+        return _h2h
+    except PlaywrightTimeoutError:
+        return []
 
 
 """

@@ -19,14 +19,16 @@ def scrape_match_details(browser, href):
 
     match_data = match_details(match_page=match_page)
     stats = h2h(browser=browser, href=href[:href.rfind('#')] + "#/h2h")
-    #raw_data = find_perfect_market(stats)
-    expected_mkts = perfect_options(stats)
-    mkts = prediction_markets(stats)
 
-    if datetime.strptime(match_data.get('time'), "%d.%m.%Y %H:%M") > datetime.now():
-        if mkts:
-            prediction = predict(match_data.get('home'), match_data.get('away'), mkts)
-            print(f"{match_data.get('home')} : {prediction} : {mkts} : {expected_mkts}")
+    if stats:
+        #raw_data = find_perfect_market(stats)
+        expected_mkts = perfect_options(stats)
+        mkts = prediction_markets(stats)
+
+        if datetime.strptime(match_data.get('time'), "%d.%m.%Y %H:%M") > datetime.now():
+            if mkts:
+                prediction = predict(match_data.get('home'), match_data.get('away'), mkts)
+                print(f"{match_data.get('home')} : {prediction} : {mkts} : {expected_mkts}")
     
     
     
