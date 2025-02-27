@@ -1,6 +1,6 @@
 from playwright.sync_api import sync_playwright
 from match.summary import scrape_match_details
-
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 def scrape_flashscore():
     """
@@ -18,14 +18,15 @@ def scrape_flashscore():
 
         # Get events
         events = page.locator(".event__match").all()
-        #events  = events[::-1]
-        
+        events  = events[::-1]
+            
         for event in events:
             match_link = event.locator("a").first
             href = match_link.get_attribute("href")
 
             # get match details
             data = scrape_match_details(browser=browser, href=href)
+        
             
 
         
