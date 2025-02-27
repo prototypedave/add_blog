@@ -3,11 +3,25 @@ import type { RootState } from "../redux/store";
 import Navbar from "~/components/navbar";
 import { useNavigate } from "react-router-dom";
 import { setSelectedMatch } from "../redux/predictionsSlice";
+import { useEffect } from "react";
 
 const MatchDetails: React.FC = () => {
   const selectedMatch = useSelector((state: RootState) => state.predictions.selectedMatch);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // Force Adsense to appear
+  useEffect(() => {
+      const script = document.createElement("script");
+      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1933580054760576";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      document.head.appendChild(script);
+  
+      return () => {
+        document.head.removeChild(script);
+      };
+  }, []);
 
   if (!selectedMatch) {
     return (

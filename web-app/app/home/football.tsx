@@ -10,6 +10,19 @@ const Football: React.FC = () => {
   const predictions = useSelector((state: RootState) => state.predictions.data);
   const navigate = useNavigate();
 
+  // Force Adsense to appear
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1933580054760576";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
   useEffect(() => {
     const fetchPredictions = async () => {
       const sampleData = [
