@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { setPredictions, setSelectedMatch } from "../redux/predictionsSlice";
+import { fetchPredictions, setSelectedMatch } from "../redux/predictionsSlice";
 import type { RootState, AppDispatch } from "../redux/store";
 import Navbar from "~/components/navbar";
 import VIPBanner from "~/components/banner";
@@ -11,42 +11,10 @@ const Football: React.FC = () => {
   const predictions = useSelector((state: RootState) => state.predictions.data);
   const navigate = useNavigate();
 
-  // Force Adsense to appear
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1933580054760576";
-    script.async = true;
-    script.crossOrigin = "anonymous";
-    document.head.appendChild(script);
-
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
-
-  useEffect(() => {
-    const fetchPredictions = async () => {
-      const sampleData = [
-        {
-          league: "Premier League",
-          matches: [
-            { id: 1, time: '9:00', homeTeam: "Manchester United", awayTeam: "Arsenal", prediction: "Draw", odds: "3.12", result: "-", reason: "Tactical balance expected.", chance: "82%"},
-            { id: 2, time: '9:00', homeTeam: "Chelsea", awayTeam: "Liverpool", prediction: "Liverpool Win", odds: "3.12", result: "-", reason: "Liverpool's strong away form.", chance: "82%" },
-          ],
-        },
-        {
-          league: "La Liga",
-          matches: [
-            { id: 3, time:'9:00', homeTeam: "Real Madrid", awayTeam: "Barcelona", prediction: "Real Madrid Win", odds: "3.12", result: "-", reason: "Madrid's home advantage.", chance: "82%" },
-            { id: 4, time: '9:00', homeTeam: "Atletico Madrid", awayTeam: "Sevilla", prediction: "Atletico Win", odds: "3.12", result: "-", reason: "Atletico's defensive strength.", chance: "82%" },
-          ],
-        },
-      ];
-      dispatch(setPredictions(sampleData));
-    };
-
-    fetchPredictions();
+    dispatch(fetchPredictions());
   }, [dispatch]);
+  
 
   return (
     <div className="flex flex-col gap-2 pt-[55px]">
