@@ -43,20 +43,19 @@ export const fetchPredictions = createAsyncThunk(
 
     // If data exists and is fresh, use localStorage
     if (storedData && now - lastFetched < oneDay) {
-      console.log("Using cached data");
-      dispatch(setPredictions(JSON.parse(storedData)));
-      return;
+        console.log("Using cached data");
+        dispatch(setPredictions(JSON.parse(storedData)));
+        return;
     }
 
     // Check if we need to update
-    const response = await fetch("http://127.0.0.1:5000/should-update");
-    const { shouldUpdate } = await response.json();
+    const response = await fetch("http://127.0.0.1:5000/status");
+    const shouldUpdate  = await response.json();
 
-    if (shouldUpdate || !storedData) {
+    if (shouldUpdate.status || !storedData) {
       console.log("Fetching new data from backend");
-      const dataResponse = await fetch("http://127.0.0.1:5000/predictions");
+      const dataResponse = await fetch("http://127.0.0.1:5000/ovr-predictions");
       const data = await dataResponse.json();
-      
       // Store in localStorage
       localStorage.setItem("predictionsData", JSON.stringify(data));
       localStorage.setItem("predictionsTimestamp", now.toString());
