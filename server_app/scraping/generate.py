@@ -1,4 +1,7 @@
 from playwright.sync_api import Page
+from server_app.algorithms.projected_outcome import prediction_markets
+from server_app.automation.groq_assistant import predict
+from datetime import datetime
 
 def is_generated_games_report(page: Page, db):
     page.goto("https://www.flashscoreusa.com/?rd=flashscore.us")
@@ -16,7 +19,16 @@ def is_generated_games_report(page: Page, db):
         time = page.locator(".duelParticipant__startTime div").inner_text().strip()
         country = page.locator(".tournamentHeader__country").inner_text().strip()
 
-        h2h = get_h2h_details(page, link[:link.rfind('#')] + "#/h2h")
+        markets_to_predict = prediction_markets(get_h2h_details(page, link[:link.rfind('#')] + "#/h2h"))
+
+        # Only predict potential games
+        if markets_to_predict:
+            # Predict on markets that havent played yet
+            if datetime.strptime(time, "%d.%m.%Y %H:%M") > datetime.now():
+                prediction = predict(home_team, away_team, markets_to_predict)
+
+
+    return True
 
 
 def get_h2h_details(page: Page, link: str):

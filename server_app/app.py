@@ -6,7 +6,7 @@ from .scheduler import start_scheduler
 from .models.predictions import MatchPrediction
 
 app = Flask(__name__)
-CORS(app, origins=['http://localhost:5173'])
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///predictions.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -47,4 +47,4 @@ def get_match():
     return jsonify(final_response)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
