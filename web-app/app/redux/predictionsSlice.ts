@@ -10,6 +10,7 @@ interface Match {
   result: string;
   reason: string;
   chance: string;
+  time: string;
 }
 
 interface League {

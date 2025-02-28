@@ -29,15 +29,15 @@ const Football: React.FC = () => {
         {
           league: "Premier League",
           matches: [
-            { id: 1, homeTeam: "Manchester United", awayTeam: "Arsenal", prediction: "Draw", odds: "3.12", result: "-", reason: "Tactical balance expected.", chance: "82%"},
-            { id: 2, homeTeam: "Chelsea", awayTeam: "Liverpool", prediction: "Liverpool Win", odds: "3.12", result: "-", reason: "Liverpool's strong away form.", chance: "82%" },
+            { id: 1, time: '9:00', homeTeam: "Manchester United", awayTeam: "Arsenal", prediction: "Draw", odds: "3.12", result: "-", reason: "Tactical balance expected.", chance: "82%"},
+            { id: 2, time: '9:00', homeTeam: "Chelsea", awayTeam: "Liverpool", prediction: "Liverpool Win", odds: "3.12", result: "-", reason: "Liverpool's strong away form.", chance: "82%" },
           ],
         },
         {
           league: "La Liga",
           matches: [
-            { id: 3, homeTeam: "Real Madrid", awayTeam: "Barcelona", prediction: "Real Madrid Win", odds: "3.12", result: "-", reason: "Madrid's home advantage.", chance: "82%" },
-            { id: 4, homeTeam: "Atletico Madrid", awayTeam: "Sevilla", prediction: "Atletico Win", odds: "3.12", result: "-", reason: "Atletico's defensive strength.", chance: "82%" },
+            { id: 3, time:'9:00', homeTeam: "Real Madrid", awayTeam: "Barcelona", prediction: "Real Madrid Win", odds: "3.12", result: "-", reason: "Madrid's home advantage.", chance: "82%" },
+            { id: 4, time: '9:00', homeTeam: "Atletico Madrid", awayTeam: "Sevilla", prediction: "Atletico Win", odds: "3.12", result: "-", reason: "Atletico's defensive strength.", chance: "82%" },
           ],
         },
       ];
@@ -50,55 +50,47 @@ const Football: React.FC = () => {
   return (
     <div className="flex flex-col gap-2 pt-[55px]">
       <Navbar />
-      <div className="flex gap-32 p-4 justify-center">
-        <Link to="/football" className="active">Football</Link>
-        <Link to="/basketball">Basketball</Link>
-        <Link to="/ice-hockey">Ice Hockey</Link>
-      </div>
-
       <div className="p-4">
-        <h1 className="text-xl font-bold mb-4 text-center">Today's Football Predictions</h1>
-
         {predictions.map((league) => (
           <div key={league.league} className="mb-6">
             <h2 className="text-2xl font-semibold text-white p-2">{league.league}</h2>
-            <table className="w-full mt-2">
-              <thead className="bg-gray-200">
+            <table className="w-full mt-2 mb-2 border-separate border-spacing-0">
+              <thead className="bg-gray-800 text-green-400">
                 <tr>
-                  <th className="px-4 py-2">Match</th>
-                  <th className="px-4 py-2">Prediction</th>
-                  <th className="px-4 py-2">Odds</th>
-                  <th className="px-4 py-2">%</th>
-                  <th className="px-4 py-2">Results</th>
+                  <th className="px-4 py-3 text-left">Time</th>
+                  <th className="px-4 py-3 text-left">Match</th>
+                  <th className="px-4 py-3 text-left">Prediction</th>
+                  <th className="px-4 py-3 text-left">Odds</th>
+                  <th className="px-4 py-3 text-left">%</th>
+                  <th className="px-4 py-3 text-left">Results</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-700">
                 {league.matches.map((match) => (
-                  <tr 
-                    key={match.id} 
-                    className="border cursor-pointer hover:bg-gray-100"
+                  <tr
+                    key={match.id}
+                    className="cursor-pointer even:bg-gray-800 odd:bg-gray-700 text-white hover:bg-green-800 hover:text-black"
                     onClick={() => {
                       dispatch(setSelectedMatch(match));
                       navigate(`/predictions/${match.id}`);
                     }}
                   >
-                    <td className="px-4 py-2">{match.homeTeam} v {match.awayTeam}</td>
-                    <td className="px-4 py-2">{match.prediction}</td>
-                    <td className="px-4 py-2">{match.odds}</td>
-                    <td className="px-4 py-2">{match.chance}</td>
-                    <td className="px-4 py-2">{match.result}</td>
+                    <td className="px-4 py-3">{match.time}</td>
+                    <td className="px-4 py-3">{match.homeTeam} v {match.awayTeam}</td>
+                    <td className="px-4 py-3">{match.prediction}</td>
+                    <td className="px-4 py-3">{match.odds}</td>
+                    <td className="px-4 py-3">{match.chance}</td>
+                    <td className="px-4 py-3">{match.result}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            <div className="flex flex-col mt-4 bg-yellow-300 items-center text-center py-4">
-              <p>Google Ad Placeholder</p>
-              <p>Get well analyzed sure bets when you sign up for VIP.</p>
-            </div>
+            <p className="p-10 text-sm text-center text-gray-800">Get {league.league} predictions. {league.league} Both teams to score(btts). {league.league} over 2.5 sure predictions. {league.league} 100% sure predictions.</p>
           </div>
         ))}
       </div>
+
     </div>
   );
 };
