@@ -16,10 +16,18 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-# Checks if there is an update to be made
 @app.route('/status', methods=['GET'])
 def update_state():
-    return jsonify({"status": True})
+    today = datetime.utcnow().date()
+
+    # Check if there is at least one record for today
+    exists = db.session.query(
+        MatchPrediction.query.filter(
+            db.func.date(MatchPrediction.created_at) == today
+        ).exists()
+    ).scalar()
+
+    return jsonify({"status": exists})
   
 
 @app.route('/ovr-predictions', methods=['GET'])
