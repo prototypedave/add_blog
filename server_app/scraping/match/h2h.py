@@ -3,7 +3,7 @@ from .stats.nobtts import get_ng_score, get_ng_score_ovr
 from .stats.over25 import get_over25_ovr, get_over25_score
 from .stats.under25 import get_under25_ovr, get_under25_score
 from .stats.windrawwin import get_away_score, get_home_score, get_1x2_ovr 
-from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError
 
 """
     Helper function
@@ -45,7 +45,7 @@ def get_h2h_object(h2h):
 """
     Returns h2h data
 """
-def get_h2h(page, href):
+def get_h2h(page: Page, href):
     try:
         page.goto(href)
         page.wait_for_selector(".h2h__section")
@@ -64,17 +64,17 @@ def get_h2h(page, href):
 """
     Returns stats in an organized object
 """
-def organize_stats(func, func2, func3, page, ovr, home, away):
+def organize_stats(func, func2, func3, page: Page, ovr, home, away):
     return {
         'ovr' : func(get_h2h(page, ovr)),
         'home' : func2(get_h2h(page, home)),
-        'away': func3(get_h2h(page, home)),
+        'away': func3(get_h2h(page, away)),
     }
 
 """
     Returns a given match statistical data for the last 5 games
 """
-def get_stats(h2h_page, ovr, home, away):
+def get_stats(h2h_page: Page, ovr, home, away):
     return ({
         'btts_stats' : organize_stats(get_btts_score_ovr, get_btts_score, get_btts_score, h2h_page, ovr, home, away),
         'ng_stats' : organize_stats(get_ng_score_ovr, get_ng_score, get_btts_score, h2h_page, ovr, home, away),

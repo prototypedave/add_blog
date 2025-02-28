@@ -1,4 +1,6 @@
-def final_results_odds(page, href):
+from playwright.sync_api import Page
+
+def final_results_odds(page: Page, href):
     page.goto(href)
     page.wait_for_selector(".filterOver")
 
@@ -15,7 +17,7 @@ def final_results_odds(page, href):
         return None
 
 
-def over_under_odds(page, href):
+def over_under_odds(page: Page, href):
     page.goto(href)
     page.wait_for_selector(".filterOver")
     rows = page.locator(".ui-table__row").all()
@@ -35,7 +37,7 @@ def over_under_odds(page, href):
     return over_under
 
 
-def both_team_to_score_odds(page, href):
+def both_team_to_score_odds(page: Page, href):
     page.goto(href)
     page.wait_for_selector(".filterOver")
     
@@ -49,7 +51,7 @@ def both_team_to_score_odds(page, href):
         return None
     
 
-def double_chance_results_odds(page, href):
+def double_chance_results_odds(page: Page, href):
     page.goto(href)
     page.wait_for_selector(".filterOver")
 
@@ -66,7 +68,7 @@ def double_chance_results_odds(page, href):
         return None
     
 
-def handicap_odds(page, href):
+def handicap_odds(page: Page, href):
     page.goto(href)
     page.wait_for_selector(".filterOver")
     rows = page.locator(".ui-table__row").all()

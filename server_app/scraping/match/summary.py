@@ -9,19 +9,16 @@ from .models.algorithm import prediction_markets
 from datetime import datetime
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from server_app.models.predictions import MatchPrediction
+from playwright.sync_api import Page
 
-def scrape_match_details(browser, href, db):
+def scrape_match_details(page, href, db):
     """
         Gets data for individual games
     """
-    # open a new page
-    match_page = browser.new_page()
     try:
-        match_page.goto(href)
-        match_page.wait_for_selector(".duelParticipant")
-
-        match_data = match_details(match_page=match_page)
-        stats = h2h(browser=browser, href=href[:href.rfind('#')] + "#/h2h")
+        match_data = match_details(page, href)
+        stats = h2h(page, href[:href.rfind('#')] + "#/h2h")
+        print(match_data)
 
         if stats:
             #raw_data = find_perfect_market(stats)
@@ -49,4 +46,4 @@ def scrape_match_details(browser, href, db):
     except PlaywrightTimeoutError:
         print("Skipped")
     
-    match_page.close()
+    page.close()
