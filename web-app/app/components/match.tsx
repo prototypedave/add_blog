@@ -40,10 +40,7 @@ const MatchDetails: React.FC = () => {
   return (
     <div className="flex flex-col gap-2 pt-[55px]">
       <Navbar />
-      <div className="flex flex-col mt-4 bg-yellow-300 items-center text-center py-4">
-        <p>Google Ad Placeholder</p>
-        <p>Join our VIP subscription for well analyzed accumulator matches with good winning rate!</p>
-      </div>
+      <p>Join our VIP subscription for well analyzed accumulator matches with good winning rate!</p>
       <div className="flex flex-row gap-4">
         <div className="p-4 w-3/4">
             <h1 className="text-xl font-bold pl-4 mb-4">{selectedMatch.homeTeam} vs {selectedMatch.awayTeam}</h1> 

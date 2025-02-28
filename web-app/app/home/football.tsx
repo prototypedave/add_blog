@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { setPredictions, setSelectedMatch } from "../redux/predictionsSlice";
 import type { RootState, AppDispatch } from "../redux/store";
 import Navbar from "~/components/navbar";
+import VIPBanner from "~/components/banner";
 
 const Football: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -85,8 +86,11 @@ const Football: React.FC = () => {
                 ))}
               </tbody>
             </table>
-
-            <p className="p-10 text-sm text-center text-gray-800">Get {league.league} predictions. {league.league} Both teams to score(btts). {league.league} over 2.5 sure predictions. {league.league} 100% sure predictions.</p>
+            <div className="flex mt-8">
+              <VIPBanner />
+              <div className="w-full"></div>
+            </div>
+            <p className="p-4 text-sm text-center text-gray-800">Get {league.league} predictions. {league.league} Both teams to score(btts). {league.league} over 2.5 sure predictions. {league.league} 100% sure predictions.</p>
           </div>
         ))}
       </div>
