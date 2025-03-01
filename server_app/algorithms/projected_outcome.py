@@ -43,37 +43,38 @@ def get_winner(stats):
     return ""
             
 def home_away_h2h_algo_general_mkts(stats, mkt, pred):
-    home_ou = stats.get(mkt).get('ovr').get('home')
-    away_ou = stats.get(mkt).get('ovr').get('away')
-    h2h_ou = stats.get(mkt).get('ovr').get('h2h')
+    home = stats.get(mkt).get('ovr').get('home')
+    away = stats.get(mkt).get('ovr').get('away')
+    h2h = stats.get(mkt).get('ovr').get('h2h')
 
     # High chance of the market if both home and away have high score and h2h above the 50% chance
-    if (home_ou and away_ou > 69) and h2h_ou > 60:
+    if (home and away > 69) and h2h > 60:
         return pred
     
     # Capture mkt where h2h has a high score and recent form is above average (60%)
-    elif ((home_ou or away_ou > 69) and h2h_ou > 69) and (home_ou and away_ou > 60):
+    elif ((home or away > 69) and h2h > 69) and (home and away > 60):
         return pred
     # return none if merit not met
-    return 
+    return
+
+
+def home_or_away_algo_general_mkts(stats, mkt, pred):
+    home = stats.get(mkt).get('home').get('team')
+    h2h_home = stats.get(mkt).get('home').get('h2h')
+    away = stats.get(mkt).get('away').get('team')
+
+    # If home or away form is impressive with a good h2h record
+    if ((home or away > 79) and (home and away > 60)) and h2h_home > 69:
+        return pred
+    return
 
 
 def get_other_markets(stats, mkt, pred):
-    
-    home_home_ou = stats.get(mkt).get('home').get('team')
-    h2h_home = stats.get(mkt).get('home').get('h2h')
-    away_away_ou = stats.get(mkt).get('away').get('team')
-    
-    if (home_ou > 69 or away_ou > 69) and h2h_ou > 69:
+    if home_away_h2h_algo_general_mkts(stats, mkt, pred):
         return pred
-    
-    if (home_home_ou > 69 or away_away_ou > 69) and h2h_home > 69:
+    elif home_or_away_algo_general_mkts(stats, mkt, pred):
         return pred
-
-    if h2h_ou > 90:
-        return pred
-
-    return '' 
+    return
 
 
 def prediction_markets(stats):
@@ -92,5 +93,5 @@ def prediction_markets(stats):
 
     if get_other_markets(stats, 'under25_stats', 'under 2.5'):
         markets.append(get_other_markets(stats, 'under25_stats', 'under 2.5'))
-
+    print(markets)
     return markets

@@ -116,6 +116,5 @@ def h2h(page: Page, href):
     away = href + "/away"
 
     stats = get_stats(h2h_page, ovr, home, away)
-    print(stats)
     
     return stats
