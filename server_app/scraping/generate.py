@@ -2,11 +2,11 @@ from playwright.sync_api import Page
 from server_app.algorithms.projected_outcome import prediction_markets
 from server_app.automation.groq_assistant import predict
 from server_app.models.predictions import MatchPrediction
-from .stats import get_btts_score, get_btts_score_ovr
-from .stats import get_ng_score, get_ng_score_ovr
-from .stats import get_over25_ovr, get_over25_score
-from .stats import get_under25_ovr, get_under25_score
-from .stats import get_away_score, get_home_score, get_1x2_ovr
+from .stats.btts import get_btts_score, get_btts_score_ovr
+from .stats.nobtts import get_ng_score, get_ng_score_ovr
+from .stats.over25 import get_over25_ovr, get_over25_score
+from .stats.under25 import get_under25_ovr, get_under25_score
+from .stats.windrawwin import get_away_score, get_home_score, get_1x2_ovr
 from datetime import datetime
 
 def is_generated_games_report(page: Page, db):
@@ -26,8 +26,8 @@ def is_generated_games_report(page: Page, db):
         country = page.locator(".tournamentHeader__country").inner_text().strip()
 
         markets_to_predict = prediction_markets(h2h(page, link[:link.rfind('#')] + "#/h2h"))
-        print(f"{home_team} : {markets_to_predict}")
-
+        metrics = get_table_standings(page, link[:link.rfind('#')] + "#/standings/overall", home_team, away_team)
+        
         # Only predict potential games
         """if markets_to_predict:
             # Predict on markets that havent played yet
@@ -67,7 +67,6 @@ def get_h2h_object(h2h):
     head = h2h.locator("div").first.inner_text().strip()
     previous = h2h.locator(".rows .h2h__row").all()
     matches = []
-    
     for row in previous:
         matches.append(get_matches(row))    
     
@@ -118,3 +117,30 @@ def h2h(page: Page, href):
     stats = get_stats(h2h_page, ovr, home, away)
     
     return stats
+
+
+def get_table_standings(page: Page, href: str, home: str, away: str):
+    page.goto(href)
+    page.wait_for_selector(".tableWrapper")
+    participants = page.locator(".table__row--selected").all()
+
+    stats = []
+    
+    for participant in participants:
+        team = participant.locator(".tableCellParticipant__name").inner_text().strip()
+        if team == (home or away):
+            played = participant.locator(".table__cell--value").first.inner_text().strip()
+            scored, conceeded = format_goals(participant.locator(".table__cell--score").inner_text().strip())
+            points = participant.locator(".table__cell--points").inner_text().strip()
+            stats.append({'team' : team, 'played': played, 'scored': scored, 'conceeded': conceeded, 'points': points})
+
+    return stats  
+
+
+def format_goals(gls: str):
+    try:
+        scored, conceeded = map(int, gls.split(':'))
+        return scored, conceeded
+    except ValueError:
+        return None
+    

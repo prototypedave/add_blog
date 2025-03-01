@@ -1,0 +1,96 @@
+from server_app.models.sure import SurePrediction
+
+def assert_sure_btts(metrics: list):
+    if assert_btts(metrics):
+        if (metrics[0].conceeded > metrics[0].played) and (metrics[1].conceeded > metrics[1].played):
+            return True
+    return False
+        
+def assert_btts(metrics: list):
+    if (metrics[0].scored > metrics[0].played) and (metrics[1].scored > metrics[1].played):
+        return True
+    return False
+
+
+def assert_no_btts(metrics: list):
+    if (metrics[0].scored < metrics[0].played) and (metrics[1].scored < metrics[1].played):
+        return True
+    return False
+
+def assert_sure_no_btts(metrics: list):
+    if assert_btts(metrics):
+        if (metrics[0].conceeded < metrics[0].played) and (metrics[1].conceeded < metrics[1].played):
+            return True
+    return False
+    
+def assert_sure_over(metrics: list):
+    expect = metrics[0].played * 3
+    if (metrics[0].scored + metrics[0].conceeded) > expect and (metrics[1].scored + metrics[1].conceeded) > expect:
+        return True
+    return False
+
+
+def assert_over(metrics: list):
+    expect = metrics[0].played * 3
+    total = (metrics[0].scored + metrics[0].conceeded + metrics[1].scored + metrics[1].conceeded) / 2
+    if total > expect:
+        return True
+    return False
+
+
+def assert_under(metrics: list):
+    if (metrics[0].scored + metrics[1].scored) / metrics[0].played < 1.5:
+        return True
+    return False
+
+
+def assert_sure_under(metrics: list):
+    home = (metrics[0].scored + metrics[0].conceeded) / 2
+    away = (metrics[1].scored + metrics[1].conceeded) / 2
+
+    if home / metrics[0].played < 1.5 and away / metrics[1].played:
+        return True
+    return False
+
+
+def save_sure_predictions(db, prediction, country, home, away, score, time):
+    new_pred = SurePrediction(
+        league=country,
+        home_team=home,
+        away_team=away,
+        prediction=prediction["prediction"],
+        odds=prediction["odds"],
+        result=score,
+        reason=prediction["reason"],
+        chance=prediction["chance"],
+        time=time
+    )
+    db.session.add(new_pred)
+    db.session.commit()
+
+def sure_match(metrics, met, db, prediction, country, home, away, score, time):
+    if len(metrics) == 2:
+        if ('btts' in prediction['prediction']) and ('yes' in prediction['prediction']):
+            if assert_sure_btts(metrics):
+                save_sure_predictions(db, prediction, country, home, away, score, time)
+                return
+        
+        elif ('btts' in prediction['prediction']) and ('no' in prediction['prediction']):
+            if assert_sure_no_btts(metrics):
+                save_sure_predictions(db, prediction, country, home, away, score, time)
+                return
+
+        elif ('over' in prediction['prediction']):
+            if assert_sure_over(metrics):
+                save_sure_predictions(db, prediction, country, home, away, score, time)
+                return
+            
+        elif ('under' in prediction['prediction']):
+            if assert_sure_under(metrics):
+                save_sure_predictions(db, prediction, country, home, away, score, time)
+                return
+            
+        elif met:
+            save_sure_predictions(db, prediction, country, home, away, score, time)
+            return
+    

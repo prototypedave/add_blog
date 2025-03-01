@@ -79,6 +79,7 @@ def get_other_markets(stats, mkt, pred):
 
 def prediction_markets(stats):
     markets = []
+    print(markets)
     if get_winner(stats):
         markets.append(get_winner(stats))
     
@@ -93,5 +94,4 @@ def prediction_markets(stats):
 
     if get_other_markets(stats, 'under25_stats', 'under 2.5'):
         markets.append(get_other_markets(stats, 'under25_stats', 'under 2.5'))
-    print(markets)
     return markets
