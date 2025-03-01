@@ -49,12 +49,12 @@ export const fetchPredictions = createAsyncThunk(
     }
 
     // Check if we need to update
-    const response = await fetch("http://127.0.0.1:5000/status");
+    const response = await fetch("http://127.0.0.1:5000/api/status");
     const shouldUpdate  = await response.json();
 
     if (shouldUpdate.status || !storedData) {
       console.log("Fetching new data from backend");
-      const dataResponse = await fetch("http://127.0.0.1:5000/ovr-predictions");
+      const dataResponse = await fetch("http://127.0.0.1:5000/api/ovr-predictions");
       const data = await dataResponse.json();
       // Store in localStorage
       localStorage.setItem("predictionsData", JSON.stringify(data));
