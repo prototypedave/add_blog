@@ -59,7 +59,7 @@ const Football: React.FC = () => {
             </div>
 
             {/* Flex container for banner and spacing */}
-            <div className="flex flex-col sm:flex-row mt-8 gap-4">
+            <div className="flex flex-col lg:flex-row mt-8 gap-4">
               <VIPBanner />
               <div className="w-full"></div>
             </div>

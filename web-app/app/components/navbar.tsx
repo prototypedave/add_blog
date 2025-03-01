@@ -8,7 +8,7 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-gray-800 text-green-400 shadow-md">
-      <div className="flex items-center justify-between px-4 py-3">
+      <div className="flex items-center justify-between sm:justify-start px-4 py-3">
         {/* Logo */}
         <Link to="/">
           <img src={homeLogo} alt="betting tips icon" className="h-[40px] sm:h-[50px] w-[150px] sm:w-[200px]" />
@@ -23,7 +23,7 @@ const Navbar: React.FC = () => {
         </button>
 
         {/* Desktop Menu */}
-        <div className="hidden sm:flex space-x-4">
+        <div className="hidden sm:flex flex-1 justify-between lg:gap-4 space-x-4">
           <NavLinks />
         </div>
       </div>
@@ -41,12 +41,12 @@ const Navbar: React.FC = () => {
 // Reusable NavLinks Component
 const NavLinks: React.FC = () => (
   <>
-    <Link to="/" className="py-2 text-lg hover:text-white">Football</Link>
-    <Link to="/basketball" className="py-2 text-lg hover:text-white">Basketball</Link>
-    <Link to="/ice-hockey" className="py-2 text-lg hover:text-white">Ice Hockey</Link>
-    <Link to="/" className="py-2 text-lg hover:text-white">Accumulators</Link>
-    <Link to="/results" className="py-2 text-lg hover:text-white">Record</Link>
-    <Link to="/vip" className="py-2 text-lg hover:text-white">VIP</Link>
+    <Link to="/" className="py-2 text-bs hover:text-white">Football</Link>
+    <Link to="/basketball" className="py-2 text-base hover:text-white">Basketball</Link>
+    <Link to="/ice-hockey" className="py-2 text-base hover:text-white">Ice Hockey</Link>
+    <Link to="/" className="py-2 text-base hover:text-white">Accumulators</Link>
+    <Link to="/results" className="py-2 text-base hover:text-white">Record</Link>
+    <Link to="/vip" className="py-2 text-bs hover:text-white">VIP</Link>
   </>
 );
 
