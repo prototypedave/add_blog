@@ -1,5 +1,7 @@
 from playwright.sync_api import Page
 from server_app.algorithms.projected_outcome import prediction_markets
+from server_app.algorithms.analysis import find_accumulators
+from server_app.algorithms.sure_bet import perfect_options
 from server_app.automation.groq_assistant import predict
 from server_app.models.predictions import MatchPrediction
 from .stats.btts import get_btts_score, get_btts_score_ovr
@@ -8,6 +10,7 @@ from .stats.over25 import get_over25_ovr, get_over25_score
 from .stats.under25 import get_under25_ovr, get_under25_score
 from .stats.windrawwin import get_away_score, get_home_score, get_1x2_ovr
 from datetime import datetime
+
 
 def is_generated_games_report(page: Page, db):
     page.goto("https://www.flashscoreusa.com/?rd=flashscore.us")
@@ -26,13 +29,15 @@ def is_generated_games_report(page: Page, db):
         country = page.locator(".tournamentHeader__country").inner_text().strip()
 
         markets_to_predict = prediction_markets(h2h(page, link[:link.rfind('#')] + "#/h2h"))
+        mets = perfect_options(h2h(page, link[:link.rfind('#')] + "#/h2h"))
         metrics = get_table_standings(page, link[:link.rfind('#')] + "#/standings/overall", home_team, away_team)
         
         # Only predict potential games
-        """if markets_to_predict:
+        if markets_to_predict:
             # Predict on markets that havent played yet
             if datetime.strptime(time, "%I:%M %p, %B %d, %Y") > datetime.now():
                 prediction = predict(home_team, away_team, markets_to_predict)
+                find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time)
                 new_pred = MatchPrediction(
                     league=country,
                     home_team=home_team,
@@ -46,7 +51,7 @@ def is_generated_games_report(page: Page, db):
                 )
                 db.session.add(new_pred)
                 db.session.commit()
-                print("Saved to db")"""
+                print("Saved to db")
 
 
     return True

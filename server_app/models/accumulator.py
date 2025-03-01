@@ -3,8 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from .storage import db
 from datetime import datetime, timedelta
 
-class SurePrediction(db.Model):
-    __tablename__ = 'sure_pred'
+class AccumulatorPrediction(db.Model):
+    __tablename__ = 'sure_predictions'
 
     id = db.Column(db.Integer, primary_key=True)
     league = db.Column(db.String(100), nullable=False)
@@ -35,5 +35,5 @@ class SurePrediction(db.Model):
 
 def delete_sure_predictions(db):
     expiry_date = datetime.utcnow() - timedelta(days=3)
-    SurePrediction.query.filter(SurePrediction.created_at < expiry_date).delete()
+    AccumulatorPrediction.query.filter(AccumulatorPrediction.created_at < expiry_date).delete()
     db.session.commit()

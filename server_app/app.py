@@ -4,6 +4,8 @@ from .models.storage import db
 from datetime import datetime
 from .scheduler import start_scheduler
 from .models.predictions import MatchPrediction
+from .models.sure import SurePrediction
+from .models.accumulator import AccumulatorPrediction
 
 app = Flask(__name__)
 CORS(app)
@@ -16,7 +18,7 @@ with app.app_context():
     db.create_all()  
     start_scheduler(app, db)  
 
-@app.route('/status', methods=['GET'])
+@app.route('/api/status', methods=['GET'])
 def update_state():
     today = datetime.utcnow().date()
 
@@ -28,7 +30,8 @@ def update_state():
 
     return jsonify({"status": exists})
 
-@app.route('/ovr-predictions', methods=['GET'])
+
+@app.route('/api/ovr-predictions', methods=['GET'])
 def get_match():
     today = datetime.utcnow().date()
     predictions = MatchPrediction.query.filter(
@@ -45,6 +48,45 @@ def get_match():
     final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
     
     return jsonify(final_response)
+
+
+@app.route('/api/sure-predictions', methods=['GET'])
+def get_sure():
+    today = datetime.utcnow().date()
+    predictions = SurePrediction.query.filter(
+        db.func.date(SurePrediction.created_at) == today
+    ).all()
+
+    response_data = {}
+
+    for match in predictions:
+        if match.league not in response_data:
+            response_data[match.league] = []
+        response_data[match.league].append(match.to_dict())
+
+    final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
+    
+    return jsonify(final_response)
+
+
+@app.route('/api/accu-predictions', methods=['GET'])
+def get_sure():
+    today = datetime.utcnow().date()
+    predictions = AccumulatorPrediction.query.filter(
+        db.func.date(AccumulatorPrediction.created_at) == today
+    ).all()
+
+    response_data = {}
+
+    for match in predictions:
+        if match.league not in response_data:
+            response_data[match.league] = []
+        response_data[match.league].append(match.to_dict())
+
+    final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
+    
+    return jsonify(final_response)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
