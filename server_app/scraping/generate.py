@@ -1,6 +1,12 @@
 from playwright.sync_api import Page
 from server_app.algorithms.projected_outcome import prediction_markets
 from server_app.automation.groq_assistant import predict
+from server_app.models.predictions import MatchPrediction
+from .stats import get_btts_score, get_btts_score_ovr
+from .stats import get_ng_score, get_ng_score_ovr
+from .stats import get_over25_ovr, get_over25_score
+from .stats import get_under25_ovr, get_under25_score
+from .stats import get_away_score, get_home_score, get_1x2_ovr
 from datetime import datetime
 
 def is_generated_games_report(page: Page, db):
@@ -19,13 +25,28 @@ def is_generated_games_report(page: Page, db):
         time = page.locator(".duelParticipant__startTime div").inner_text().strip()
         country = page.locator(".tournamentHeader__country").inner_text().strip()
 
-        markets_to_predict = prediction_markets(get_h2h_details(page, link[:link.rfind('#')] + "#/h2h"))
+        markets_to_predict = prediction_markets(h2h(page, link[:link.rfind('#')] + "#/h2h"))
+        print(f"{home_team} : {markets_to_predict}")
 
         # Only predict potential games
-        if markets_to_predict:
+        """if markets_to_predict:
             # Predict on markets that havent played yet
-            if datetime.strptime(time, "%d.%m.%Y %H:%M") > datetime.now():
+            if datetime.strptime(time, "%I:%M %p, %B %d, %Y") > datetime.now():
                 prediction = predict(home_team, away_team, markets_to_predict)
+                new_pred = MatchPrediction(
+                    league=country,
+                    home_team=home_team,
+                    away_team=away_team,
+                    prediction=prediction["prediction"],
+                    odds=prediction["odds"],
+                    result=score,
+                    reason=prediction["reason"],
+                    chance=prediction["chance"],
+                    time=time
+                )
+                db.session.add(new_pred)
+                db.session.commit()
+                print("Saved to db")"""
 
 
     return True
@@ -71,3 +92,30 @@ def format_score(raw_score):
     parts = raw_score.split("\n")  
     parts = [p.strip() for p in parts if p.strip()]
     return "-".join(parts)
+
+def organize_stats(func, func2, func3, page: Page, ovr, home, away):
+    return {
+        'ovr' : func(get_h2h_details(page, ovr)),
+        'home' : func2(get_h2h_details(page, home)),
+        'away': func3(get_h2h_details(page, home)),
+    }
+
+def get_stats(h2h_page: Page, ovr, home, away):
+    return ({
+        'btts_stats' : organize_stats(get_btts_score_ovr, get_btts_score, get_btts_score, h2h_page, ovr, home, away),
+        'ng_stats' : organize_stats(get_ng_score_ovr, get_ng_score, get_btts_score, h2h_page, ovr, home, away),
+        'over25_stats' : organize_stats(get_over25_ovr, get_over25_score, get_btts_score, h2h_page, ovr, home, away),
+        'under25_stats' : organize_stats(get_under25_ovr, get_under25_score, get_btts_score, h2h_page, ovr, home, away),
+        'winDrawWin_stats' : organize_stats(get_1x2_ovr, get_home_score, get_away_score, h2h_page, ovr, home, away)
+    })
+
+def h2h(page: Page, href):
+    h2h_page = page
+    ovr = href + "/overall"
+    home = href + "/home"
+    away = href + "/away"
+
+    stats = get_stats(h2h_page, ovr, home, away)
+    print(stats)
+    
+    return stats

@@ -42,15 +42,28 @@ def get_winner(stats):
     
     return ""
             
-
-def get_other_markets(stats, mkt, pred):
+def home_away_h2h_algo_general_mkts(stats, mkt, pred):
     home_ou = stats.get(mkt).get('ovr').get('home')
     away_ou = stats.get(mkt).get('ovr').get('away')
     h2h_ou = stats.get(mkt).get('ovr').get('h2h')
+
+    # High chance of the market if both home and away have high score and h2h above the 50% chance
+    if (home_ou and away_ou > 69) and h2h_ou > 60:
+        return pred
+    
+    # Capture mkt where h2h has a high score and recent form is above average (60%)
+    elif ((home_ou or away_ou > 69) and h2h_ou > 69) and (home_ou and away_ou > 60):
+        return pred
+    # return none if merit not met
+    return 
+
+
+def get_other_markets(stats, mkt, pred):
+    
     home_home_ou = stats.get(mkt).get('home').get('team')
     h2h_home = stats.get(mkt).get('home').get('h2h')
     away_away_ou = stats.get(mkt).get('away').get('team')
-
+    
     if (home_ou > 69 or away_ou > 69) and h2h_ou > 69:
         return pred
     
