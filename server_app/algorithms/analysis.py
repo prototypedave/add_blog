@@ -139,9 +139,21 @@ def accumulators(metrics, met, db, prediction, country, home, away, score, time)
             save_predictions(db, prediction, country, home, away, score, time)
             return True
         
-def find_accumulators(metrics, met, db, prediction, country, home, away, score, time):
-    if sure_match(metrics, met, db, prediction, country, home, away, score, time):
+def find_accumulators(metrics, met, db, prediction, country, home, away, score, time, chance):
+    if assure_team_win(metrics, met, db, prediction, country, home, away, score, time, chance):
+        return
+
+
+def assure_team_win(metrics, met, db, prediction, country, home, away, score, time):
+    # Form chance into an int
+    chance = int(prediction['chance'][:-1]) if isinstance(prediction['chance'], str) and prediction['chance'].endswith('%') else int(prediction['chance'])
+    
+    # Check if its a home win
+    if ('win' in prediction and home in prediction) and chance > 69:
+        save_predictions(db, prediction, country, home, away, score, time)
         return True
-    if accumulators(metrics, met, db, prediction, country, home, away, score, time):
+    
+    # If away
+    if ('win' in prediction and away in prediction) and chance > 69:
+        save_predictions(db, prediction, country, home, away, score, time)
         return True
-    return False

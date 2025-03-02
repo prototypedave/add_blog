@@ -24,48 +24,56 @@ def is_generated_games_report(page: Page, db):
 
     links = links[::-1]
     for link in links:
-        page.goto(link)
-        home_team = page.locator(".duelParticipant__home .participant__participantName a").first.inner_text().strip()
-        away_team = page.locator(".duelParticipant__away .participant__participantName a").first.inner_text().strip()
-        score = page.locator(".detailScore__wrapper").inner_text().strip()
-        time = page.locator(".duelParticipant__startTime div").inner_text().strip()
-        country = page.locator(".tournamentHeader__country").inner_text().strip()
+        try:
+            page.goto(link)
+            home_team = page.locator(".duelParticipant__home .participant__participantName a").first.inner_text().strip()
+            away_team = page.locator(".duelParticipant__away .participant__participantName a").first.inner_text().strip()
+            score = page.locator(".detailScore__wrapper").inner_text().strip()
+            time = page.locator(".duelParticipant__startTime div").inner_text().strip()
+            country = page.locator(".tournamentHeader__country").inner_text().strip()
 
-        existing_record = db.session.query(MatchPrediction).filter_by(
-            home_team=home_team,
-            away_team=away_team,
-            time=time
-        ).first()
+            existing_record = db.session.query(MatchPrediction).filter_by(
+                home_team=home_team,
+                away_team=away_team,
+                time=time
+            ).first()
 
-        # Prevents re-running the whole code again
-        if existing_record:
-            markets_to_predict = prediction_markets(h2h(page, link[:link.rfind('#')] + "#/h2h"))
-            mets = perfect_options(h2h(page, link[:link.rfind('#')] + "#/h2h"))
-            metrics = get_table_standings(page, link[:link.rfind('#')] + "#/standings/overall", home_team, away_team)
-            # Only predict potential games
-            if markets_to_predict:
-                # Predict on markets that havent played yet
-                if datetime.strptime(time, "%I:%M %p, %B %d, %Y") > datetime.now():
-                    prediction = predict(home_team, away_team, markets_to_predict)
-                    if metrics:
-                        if find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time):
-                            print(f"{home_team}: {prediction}")
+            # Prevents re-running the whole code again
+            if existing_record:
+                markets_to_predict = prediction_markets(h2h(page, link[:link.rfind('#')] + "#/h2h"))
+                mets = perfect_options(h2h(page, link[:link.rfind('#')] + "#/h2h"))
+                metrics = get_table_standings(page, link[:link.rfind('#')] + "#/standings/overall", home_team, away_team)
+                # Only predict potential games
+                
+                print(len(metrics))
+                find_accumulators(metrics, mets, db, existing_record.prediction, country, home_team, away_team, score, time, int(existing_record.chance))
+                
+                
+                """if markets_to_predict:
+                    # Predict on markets that havent played yet
+                    if datetime.strptime(time, "%I:%M %p, %B %d, %Y") > datetime.now():
+                        prediction = predict(home_team, away_team, markets_to_predict)
+                        if metrics:
+                            if find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time):
+                                print(f"{home_team}: {prediction}")
 
-                    print(f'{home_team}: {mets}')
-                    new_pred = MatchPrediction(
-                        league=country,
-                        home_team=home_team,
-                        away_team=away_team,
-                        prediction=prediction["prediction"],
-                        odds=prediction["odds"],
-                        result=score,
-                        reason=prediction["reason"],
-                        chance=prediction["chance"],
-                        time=time
-                    )
-                    db.session.add(new_pred)
-                    db.session.commit()
-                    print("Saved to db")
+                        print(f'{home_team}: {mets}')
+                        new_pred = MatchPrediction(
+                            league=country,
+                            home_team=home_team,
+                            away_team=away_team,
+                            prediction=prediction["prediction"],
+                            odds=prediction["odds"],
+                            result=score,
+                            reason=prediction["reason"],
+                            chance=prediction["chance"],
+                            time=time
+                        )
+                        db.session.add(new_pred)
+                        db.session.commit()
+                        print("Saved to db")"""
+        except PlaywrightTimeoutError:
+            continue
 
 
     return True
@@ -138,25 +146,21 @@ def h2h(page: Page, href):
     return stats
 
 
-def get_table_standings(page: Page, href: str, home: str, away: str):
-    try: 
-        page.goto(href)
-        page.wait_for_selector(".tableWrapper")
-        participants = page.locator(".table__row--selected").all()
+def get_table_standings(page: Page, href: str, home: str, away: str): 
+    page.goto(href)
+    page.wait_for_selector(".tableWrapper")
+    participants = page.locator(".table__row--selected").all()
 
-        stats = []
+    stats = []
         
-        for participant in participants:
-            team = participant.locator(".tableCellParticipant__name").inner_text().strip()
-            if team == (home or away):
-                played = participant.locator(".table__cell--value").first.inner_text().strip()
-                scored, conceeded = format_goals(participant.locator(".table__cell--score").inner_text().strip())
-                points = participant.locator(".table__cell--points").inner_text().strip()
-                stats.append({'team' : team, 'played': played, 'scored': scored, 'conceeded': conceeded, 'points': points})
-
-        return stats
-    except PlaywrightTimeoutError:
-        return []
+    for participant in participants:
+        team = participant.locator(".tableCellParticipant__name").inner_text().strip()
+        played = participant.locator(".table__cell--value").first.inner_text().strip()
+        scored, conceeded = format_goals(participant.locator(".table__cell--score").inner_text().strip())
+        points = participant.locator(".table__cell--points").inner_text().strip()
+        stats.append({'team' : team, 'played': played, 'scored': scored, 'conceeded': conceeded, 'points': points})
+    
+    return stats
 
 
 def format_goals(gls: str):

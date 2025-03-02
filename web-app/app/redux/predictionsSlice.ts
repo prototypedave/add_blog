@@ -58,12 +58,12 @@ export const fetchPredictions = createAsyncThunk(
     let apiData: League[] | null = null;
 
     while (attempts < 3) {
-      const response = await fetch("https:prototypedave.site/api/status");
+      const response = await fetch("https://prototypedave.site/api/status");
       const statusData = await response.json();
 
       if (statusData.status) {
         console.log(`Fetching new data, attempt ${attempts + 1}`);
-        const dataResponse = await fetch("https:prototypedave.site/api/ovr-predictions");
+        const dataResponse = await fetch("https://prototypedave.site/api/ovr-predictions");
         apiData = await dataResponse.json();
 
         if (JSON.stringify(apiData) !== JSON.stringify(currentData)) {

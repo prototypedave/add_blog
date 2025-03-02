@@ -71,7 +71,7 @@ def get_sure_pred():
 
     # Query for today's predictions
     predictions = SurePrediction.query.filter(
-        db.func.date(MatchPrediction.created_at) == today
+        db.func.date(SurePrediction.created_at) == today
     ).all()
 
     # If no predictions exist for today, fetch the latest day with predictions
@@ -105,7 +105,7 @@ def get_sure():
 
     # Query for today's predictions
     predictions = AccumulatorPrediction.query.filter(
-        db.func.date(MatchPrediction.created_at) == today
+        db.func.date(AccumulatorPrediction.created_at) == today
     ).all()
 
     # If no predictions exist for today, fetch the latest day with predictions
@@ -113,7 +113,7 @@ def get_sure():
         # Find the most recent date with predictions
         most_recent_date = db.session.query(
             db.func.date(AccumulatorPrediction.created_at)
-        ).order_by(db.func.date(MatchPrediction.created_at).desc()).first()
+        ).order_by(db.func.date(AccumulatorPrediction.created_at).desc()).first()
 
         if most_recent_date:
             predictions = AccumulatorPrediction.query.filter(
