@@ -20,7 +20,7 @@ with app.app_context():
 
 @app.route('/api/status', methods=['GET'])
 def update_state():
-    today = datetime.utcnow().date()
+    today = datetime.now().date()
 
     exists = db.session.query(
         MatchPrediction.query.filter(
@@ -33,7 +33,7 @@ def update_state():
 
 @app.route('/api/ovr-predictions', methods=['GET'])
 def get_match():
-    today = datetime.utcnow().date()
+    today = datetime.now().date()
     predictions = MatchPrediction.query.filter(
         db.func.date(MatchPrediction.created_at) == today
     ).all()
@@ -51,8 +51,8 @@ def get_match():
 
 
 @app.route('/api/sure-predictions', methods=['GET'])
-def get_sure():
-    today = datetime.utcnow().date()
+def get_sure_pred():
+    today = datetime.now().date()
     predictions = SurePrediction.query.filter(
         db.func.date(SurePrediction.created_at) == today
     ).all()
@@ -71,7 +71,7 @@ def get_sure():
 
 @app.route('/api/accu-predictions', methods=['GET'])
 def get_sure():
-    today = datetime.utcnow().date()
+    today = datetime.now().date()
     predictions = AccumulatorPrediction.query.filter(
         db.func.date(AccumulatorPrediction.created_at) == today
     ).all()

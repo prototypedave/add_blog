@@ -4,9 +4,12 @@ import time
 from threading import Timer
 from .scraping.scrape import flashscore
 from .models.predictions import delete_old_predictions
+import time, redis
 
 scheduler = BackgroundScheduler()
-job_running = False  # Flag to check if the job is running
+job_running = False 
+redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
+
 
 def scheduled_task(app, db):
     """Runs the scraping task and retries if it fails."""
@@ -31,9 +34,17 @@ def scheduled_task(app, db):
     job_running = False  # Reset the flag when done
 
 def start_scheduler(app, db):
-    """Start the scheduler with a delayed first execution."""
-    scheduler.add_job(lambda: scheduled_task(app, db), 'cron', hour=3, minute=0)
-    scheduler.start()
+    """Start the scheduler with a distributed lock."""
+    lock_name = "scheduler_lock"
+    lock_timeout = 60  # Lock timeout in seconds
 
-    # Delay initial execution by 1 minute
-    Timer(60, lambda: scheduled_task(app, db)).start()
+    # Attempt to acquire the lock
+    if redis_client.set(lock_name, "locked", ex=lock_timeout, nx=True):
+        print("Scheduler lock acquired. Starting scheduler.")
+        scheduler.add_job(lambda: scheduled_task(app, db), 'cron', hour=3, minute=0)
+        scheduler.start()
+
+        # Delay initial execution by 1 minute
+        Timer(10, lambda: scheduled_task(app, db)).start()
+    else:
+        print("Scheduler lock not acquired. Another process is running the scheduler.")

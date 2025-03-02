@@ -1,3 +1,17 @@
+def form_advantange(teamA, teamB, h2h, side):
+    if teamA > 69 and teamB < 40:
+        if h2h > 69:
+           return side
+
+def h2h_advantange(teamA, teamB, h2h, side):
+    if (teamA  > 60 and teamB > 60) and h2h > 69:
+        return side
+
+def based_on_side_advantange(team, h2h, side):
+    if team > 69 and h2h > 69:
+        return side
+    
+    
 def get_winner(stats):
     home_ovr = stats.get('winDrawWin_stats').get('ovr').get('home')
     away_ovr = stats.get('winDrawWin_stats').get('ovr').get('home')
@@ -9,37 +23,29 @@ def get_winner(stats):
     away_away_h2h = stats.get('winDrawWin_stats').get('away').get('h2h').get('away')
 
     # If home team favorite
-    if home_ovr > 69 and away_ovr < 50:
-        if h2h_home > 69:
-            return 'home win' # Home team to win
-        
-    # Away favourite
-    if away_ovr > 69 and home_ovr < 50:
-        if h2h_away > 69:
-            return 'away win'
+    if form_advantange(home_ovr, away_ovr, h2h_home, 'home win'):
+        return form_advantange(home_ovr, away_ovr, h2h_home, 'home win')
 
-    # Poor recent performance but still favorite to win    
-    if home_ovr > 60 and away_ovr < 30:
-        if h2h_home > 69:
-            return 'home win'
-        
     # Away favourite
-    if away_ovr > 60 and home_ovr < 30:
-        if h2h_away > 69:
-            return 'away win'
-        
-    # Poor overall performance but good location perf
-    if home_ovr > 60 and away_ovr < 30:
-        if home_home > 69 and away_away < 40:
-            if home_home_h2h > 50:
-                return 'home win'
-        
-    # Away favourite
-    if away_ovr > 60 and home_ovr < 30:
-        if away_away > 69 and home_home < 40:
-            if away_away_h2h > 50:
-                return 'away win'
+    if form_advantange(away_ovr, home_ovr, h2h_away, 'away_win'):
+        return form_advantange(away_ovr, home_ovr, h2h_away, 'away win')
+
+    # Poor recent performance but still favorite to win
+    if h2h_advantange(home_ovr, away_ovr, h2h_home, 'home win'):
+        return h2h_advantange(home_ovr, away_ovr, h2h_home, 'away win')
     
+    # Away favourite
+    if h2h_advantange(away_ovr, home_ovr, h2h_away, 'away win'):
+        return h2h_advantange(away_ovr, home_ovr, h2h_away, 'away win')
+
+    # Poor overall performance but good location perf
+    if based_on_side_advantange(home_home, home_home_h2h, 'home win'):
+        return based_on_side_advantange(home_home, home_home_h2h, 'home win')
+
+    # Away favourite
+    if based_on_side_advantange(away_away, away_away_h2h, 'away win'):
+        return based_on_side_advantange(away_away, away_away_h2h, 'away win')
+
     return ""
             
 def home_away_h2h_algo_general_mkts(stats, mkt, pred):
@@ -48,11 +54,11 @@ def home_away_h2h_algo_general_mkts(stats, mkt, pred):
     h2h = stats.get(mkt).get('ovr').get('h2h')
 
     # High chance of the market if both home and away have high score and h2h above the 50% chance
-    if (home and away > 69) and h2h > 60:
+    if (home > 69 and away > 69) and h2h > 60:
         return pred
     
     # Capture mkt where h2h has a high score and recent form is above average (60%)
-    elif ((home or away > 69) and h2h > 69) and (home and away > 60):
+    elif ((home > 69 or away > 69) and h2h > 69) and (home > 60 and away > 60):
         return pred
     # return none if merit not met
     return
@@ -64,7 +70,7 @@ def home_or_away_algo_general_mkts(stats, mkt, pred):
     away = stats.get(mkt).get('away').get('team')
 
     # If home or away form is impressive with a good h2h record
-    if ((home or away > 79) and (home and away > 60)) and h2h_home > 69:
+    if ((home > 79 or away > 79) and (home > 60 and away > 60)) and h2h_home > 69:
         return pred
     return
 
@@ -79,7 +85,6 @@ def get_other_markets(stats, mkt, pred):
 
 def prediction_markets(stats):
     markets = []
-    print(markets)
     if get_winner(stats):
         markets.append(get_winner(stats))
     

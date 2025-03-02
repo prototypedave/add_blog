@@ -71,7 +71,7 @@ def save_sure_predictions(db, prediction, country, home, away, score, time):
 
 
 def save_predictions(db, prediction, country, home, away, score, time):
-    new_pred = SurePrediction(
+    new_pred = AccumulatorPrediction(
         league=country,
         home_team=home,
         away_team=away,
@@ -91,26 +91,26 @@ def sure_match(metrics, met, db, prediction, country, home, away, score, time):
         if ('btts' in prediction['prediction']) and ('yes' in prediction['prediction']):
             if assert_sure_btts(metrics):
                 save_sure_predictions(db, prediction, country, home, away, score, time)
-                return
+                return True
         
         elif ('btts' in prediction['prediction']) and ('no' in prediction['prediction']):
             if assert_sure_no_btts(metrics):
                 save_sure_predictions(db, prediction, country, home, away, score, time)
-                return
+                return True
 
         elif ('over' in prediction['prediction']):
             if assert_sure_over(metrics):
                 save_sure_predictions(db, prediction, country, home, away, score, time)
-                return
+                return True
             
         elif ('under' in prediction['prediction']):
             if assert_sure_under(metrics):
                 save_sure_predictions(db, prediction, country, home, away, score, time)
-                return
+                return True
             
         elif met:
             save_sure_predictions(db, prediction, country, home, away, score, time)
-            return
+            return True
     
 
 def accumulators(metrics, met, db, prediction, country, home, away, score, time):
@@ -118,27 +118,30 @@ def accumulators(metrics, met, db, prediction, country, home, away, score, time)
         if ('btts' in prediction['prediction']) and ('yes' in prediction['prediction']):
             if assert_btts(metrics):
                 save_predictions(db, prediction, country, home, away, score, time)
-                return
+                return True
         
         elif ('btts' in prediction['prediction']) and ('no' in prediction['prediction']):
             if assert_no_btts(metrics):
                 save_predictions(db, prediction, country, home, away, score, time)
-                return
+                return True
 
         elif ('over' in prediction['prediction']):
             if assert_over(metrics):
                 save_predictions(db, prediction, country, home, away, score, time)
-                return
+                return True
             
         elif ('under' in prediction['prediction']):
             if assert_under(metrics):
                 save_predictions(db, prediction, country, home, away, score, time)
-                return
+                return True
             
         elif met:
             save_predictions(db, prediction, country, home, away, score, time)
-            return
+            return True
         
 def find_accumulators(metrics, met, db, prediction, country, home, away, score, time):
-    sure_match(metrics, met, db, prediction, country, home, away, score, time)
-    accumulators(metrics, met, db, prediction, country, home, away, score, time)
+    if sure_match(metrics, met, db, prediction, country, home, away, score, time):
+        return True
+    if accumulators(metrics, met, db, prediction, country, home, away, score, time):
+        return True
+    return False

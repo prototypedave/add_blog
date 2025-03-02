@@ -10,6 +10,7 @@ from .stats.over25 import get_over25_ovr, get_over25_score
 from .stats.under25 import get_under25_ovr, get_under25_score
 from .stats.windrawwin import get_away_score, get_home_score, get_1x2_ovr
 from datetime import datetime
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 
 def is_generated_games_report(page: Page, db):
@@ -20,6 +21,7 @@ def is_generated_games_report(page: Page, db):
     for event in events:
         links.append(event.locator("a").first.get_attribute("href"))
 
+    links = links[::-1]
     for link in links:
         page.goto(link)
         home_team = page.locator(".duelParticipant__home .participant__participantName a").first.inner_text().strip()
@@ -31,13 +33,16 @@ def is_generated_games_report(page: Page, db):
         markets_to_predict = prediction_markets(h2h(page, link[:link.rfind('#')] + "#/h2h"))
         mets = perfect_options(h2h(page, link[:link.rfind('#')] + "#/h2h"))
         metrics = get_table_standings(page, link[:link.rfind('#')] + "#/standings/overall", home_team, away_team)
-        
         # Only predict potential games
         if markets_to_predict:
             # Predict on markets that havent played yet
             if datetime.strptime(time, "%I:%M %p, %B %d, %Y") > datetime.now():
                 prediction = predict(home_team, away_team, markets_to_predict)
-                find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time)
+                if metrics:
+                    if find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time):
+                        print(f"{home_team}: {prediction}")
+
+                print(f'{home_team}: {mets}')
                 new_pred = MatchPrediction(
                     league=country,
                     home_team=home_team,
@@ -125,21 +130,24 @@ def h2h(page: Page, href):
 
 
 def get_table_standings(page: Page, href: str, home: str, away: str):
-    page.goto(href)
-    page.wait_for_selector(".tableWrapper")
-    participants = page.locator(".table__row--selected").all()
+    try: 
+        page.goto(href)
+        page.wait_for_selector(".tableWrapper")
+        participants = page.locator(".table__row--selected").all()
 
-    stats = []
-    
-    for participant in participants:
-        team = participant.locator(".tableCellParticipant__name").inner_text().strip()
-        if team == (home or away):
-            played = participant.locator(".table__cell--value").first.inner_text().strip()
-            scored, conceeded = format_goals(participant.locator(".table__cell--score").inner_text().strip())
-            points = participant.locator(".table__cell--points").inner_text().strip()
-            stats.append({'team' : team, 'played': played, 'scored': scored, 'conceeded': conceeded, 'points': points})
+        stats = []
+        
+        for participant in participants:
+            team = participant.locator(".tableCellParticipant__name").inner_text().strip()
+            if team == (home or away):
+                played = participant.locator(".table__cell--value").first.inner_text().strip()
+                scored, conceeded = format_goals(participant.locator(".table__cell--score").inner_text().strip())
+                points = participant.locator(".table__cell--points").inner_text().strip()
+                stats.append({'team' : team, 'played': played, 'scored': scored, 'conceeded': conceeded, 'points': points})
 
-    return stats  
+        return stats
+    except PlaywrightTimeoutError:
+        return []
 
 
 def format_goals(gls: str):
@@ -149,3 +157,4 @@ def format_goals(gls: str):
     except ValueError:
         return None
     
+
