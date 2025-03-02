@@ -11,6 +11,7 @@ from .stats.under25 import get_under25_ovr, get_under25_score
 from .stats.windrawwin import get_away_score, get_home_score, get_1x2_ovr
 from datetime import datetime
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+from sqlalchemy.orm.exc import NoResultFound
 
 
 def is_generated_games_report(page: Page, db):
@@ -30,33 +31,41 @@ def is_generated_games_report(page: Page, db):
         time = page.locator(".duelParticipant__startTime div").inner_text().strip()
         country = page.locator(".tournamentHeader__country").inner_text().strip()
 
-        markets_to_predict = prediction_markets(h2h(page, link[:link.rfind('#')] + "#/h2h"))
-        mets = perfect_options(h2h(page, link[:link.rfind('#')] + "#/h2h"))
-        metrics = get_table_standings(page, link[:link.rfind('#')] + "#/standings/overall", home_team, away_team)
-        # Only predict potential games
-        if markets_to_predict:
-            # Predict on markets that havent played yet
-            if datetime.strptime(time, "%I:%M %p, %B %d, %Y") > datetime.now():
-                prediction = predict(home_team, away_team, markets_to_predict)
-                if metrics:
-                    if find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time):
-                        print(f"{home_team}: {prediction}")
+        existing_record = db.session.query(MatchPrediction).filter_by(
+            home_team=home_team,
+            away_team=away_team,
+            time=time
+        ).first()
 
-                print(f'{home_team}: {mets}')
-                new_pred = MatchPrediction(
-                    league=country,
-                    home_team=home_team,
-                    away_team=away_team,
-                    prediction=prediction["prediction"],
-                    odds=prediction["odds"],
-                    result=score,
-                    reason=prediction["reason"],
-                    chance=prediction["chance"],
-                    time=time
-                )
-                db.session.add(new_pred)
-                db.session.commit()
-                print("Saved to db")
+        # Prevents re-running the whole code again
+        if existing_record:
+            markets_to_predict = prediction_markets(h2h(page, link[:link.rfind('#')] + "#/h2h"))
+            mets = perfect_options(h2h(page, link[:link.rfind('#')] + "#/h2h"))
+            metrics = get_table_standings(page, link[:link.rfind('#')] + "#/standings/overall", home_team, away_team)
+            # Only predict potential games
+            if markets_to_predict:
+                # Predict on markets that havent played yet
+                if datetime.strptime(time, "%I:%M %p, %B %d, %Y") > datetime.now():
+                    prediction = predict(home_team, away_team, markets_to_predict)
+                    if metrics:
+                        if find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time):
+                            print(f"{home_team}: {prediction}")
+
+                    print(f'{home_team}: {mets}')
+                    new_pred = MatchPrediction(
+                        league=country,
+                        home_team=home_team,
+                        away_team=away_team,
+                        prediction=prediction["prediction"],
+                        odds=prediction["odds"],
+                        result=score,
+                        reason=prediction["reason"],
+                        chance=prediction["chance"],
+                        time=time
+                    )
+                    db.session.add(new_pred)
+                    db.session.commit()
+                    print("Saved to db")
 
 
     return True
