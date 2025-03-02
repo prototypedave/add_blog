@@ -86,68 +86,16 @@ def save_predictions(db, prediction, country, home, away, score, time):
     db.session.commit()
 
 
-def sure_match(metrics, met, db, prediction, country, home, away, score, time):
-    if len(metrics) == 2:
-        if ('btts' in prediction['prediction']) and ('yes' in prediction['prediction']):
-            if assert_sure_btts(metrics):
-                save_sure_predictions(db, prediction, country, home, away, score, time)
-                return True
-        
-        elif ('btts' in prediction['prediction']) and ('no' in prediction['prediction']):
-            if assert_sure_no_btts(metrics):
-                save_sure_predictions(db, prediction, country, home, away, score, time)
-                return True
-
-        elif ('over' in prediction['prediction']):
-            if assert_sure_over(metrics):
-                save_sure_predictions(db, prediction, country, home, away, score, time)
-                return True
-            
-        elif ('under' in prediction['prediction']):
-            if assert_sure_under(metrics):
-                save_sure_predictions(db, prediction, country, home, away, score, time)
-                return True
-            
-        elif met:
-            save_sure_predictions(db, prediction, country, home, away, score, time)
-            return True
-    
-
-def accumulators(metrics, met, db, prediction, country, home, away, score, time):
-    if len(metrics) == 2:
-        if ('btts' in prediction['prediction']) and ('yes' in prediction['prediction']):
-            if assert_btts(metrics):
-                save_predictions(db, prediction, country, home, away, score, time)
-                return True
-        
-        elif ('btts' in prediction['prediction']) and ('no' in prediction['prediction']):
-            if assert_no_btts(metrics):
-                save_predictions(db, prediction, country, home, away, score, time)
-                return True
-
-        elif ('over' in prediction['prediction']):
-            if assert_over(metrics):
-                save_predictions(db, prediction, country, home, away, score, time)
-                return True
-            
-        elif ('under' in prediction['prediction']):
-            if assert_under(metrics):
-                save_predictions(db, prediction, country, home, away, score, time)
-                return True
-            
-        elif met:
-            save_predictions(db, prediction, country, home, away, score, time)
-            return True
-        
-def find_accumulators(metrics, met, db, prediction, country, home, away, score, time, chance):
-    if assure_team_win(metrics, met, db, prediction, country, home, away, score, time, chance):
+def find_accumulators(metrics, met, db, prediction, country, home, away, score, time, chance, h2h):
+    if assure_team_win(db, prediction, country, home, away, score, time, chance):
         return
-
-
-def assure_team_win(metrics, met, db, prediction, country, home, away, score, time):
-    # Form chance into an int
-    chance = int(prediction['chance'][:-1]) if isinstance(prediction['chance'], str) and prediction['chance'].endswith('%') else int(prediction['chance'])
+    if accumulator_btts(metrics, met, db, prediction, country, home, away, score, time, h2h, chance):
+        return
+    if accumulator_total(metrics, met, db, prediction, country, home, away, score, time, h2h, chance):
+        return
     
+
+def assure_team_win(db, prediction, country, home, away, score, time, chance):
     # Check if its a home win
     if ('win' in prediction and home in prediction) and chance > 69:
         save_predictions(db, prediction, country, home, away, score, time)
@@ -157,3 +105,117 @@ def assure_team_win(metrics, met, db, prediction, country, home, away, score, ti
     if ('win' in prediction and away in prediction) and chance > 69:
         save_predictions(db, prediction, country, home, away, score, time)
         return True
+
+
+def accumulator_btts(metrics, met, db, prediction, country, home, away, score, time, stats, chance):
+    if chance > 65 and ('btts' in prediction['prediction']) and ('yes' in prediction['prediction']):
+        if assert_btts(metrics):
+            if assert_sure_btts and chance > 70:
+                if good_ovr_mkts(stats, 'btts_stats', 79, 69):
+                    save_sure_predictions(db, prediction, country, home, away, score, time)
+                    return True
+                elif good_home_side_mkts(stats, 'btts_stats', 99, 79):
+                    save_sure_predictions(db, prediction, country, home, away, score, time)
+                    return True
+            
+            if good_ovr_mkts(stats, 'btts_stats', 69, 50):
+                save_predictions(db, prediction, country, home, away, score, time)
+                return True
+            
+            elif good_home_side_mkts(stats, 'btts_stats', 69, 50):
+                save_predictions(db, prediction, country, home, away, score, time)
+                return True
+    
+    if chance > 65 and ('btts' in prediction['prediction']) and ('no' in prediction['prediction']):
+        if assert_no_btts(metrics):
+            if assert_sure_no_btts and chance > 70:
+                if good_ovr_mkts(stats, 'ng_stats', 79, 69):
+                    save_sure_predictions(db, prediction, country, home, away, score, time)
+                    return True
+                elif good_home_side_mkts(stats, 'ng_stats', 99, 79):
+                    save_sure_predictions(db, prediction, country, home, away, score, time)
+                    return True
+                
+            if good_ovr_mkts(stats, 'ng_stats', 69, 50):
+                save_predictions(db, prediction, country, home, away, score, time)
+                return True
+            
+            elif good_home_side_mkts(stats, 'ng_stats', 69, 50):
+                save_predictions(db, prediction, country, home, away, score, time)
+                return True
+            
+    if prediction['prediction'] in met:
+        save_predictions(db, prediction, country, home, away, score, time)
+        return True
+    
+    return False
+
+
+def accumulator_total(metrics, met, db, prediction, country, home, away, score, time, stats, chance):
+    if chance > 65 and ('over' in prediction['prediction']):
+        if assert_over(metrics):
+            if assert_sure_over and chance > 70:
+                if good_ovr_mkts(stats, 'over25_stats', 79, 69):
+                    save_sure_predictions(db, prediction, country, home, away, score, time)
+                    return True
+                elif good_home_side_mkts(stats, 'over25_stats', 99, 79):
+                    save_sure_predictions(db, prediction, country, home, away, score, time)
+                    return True
+            
+            if good_ovr_mkts(stats, 'over25_stats', 69, 50):
+                save_predictions(db, prediction, country, home, away, score, time)
+                return True
+            
+            elif good_home_side_mkts(stats, 'over25_stats', 69, 50):
+                save_predictions(db, prediction, country, home, away, score, time)
+                return True
+    
+    if chance > 65 and ('under' in prediction['prediction']):
+        if assert_under(metrics):
+            if assert_sure_under and chance > 70:
+                if good_ovr_mkts(stats, 'under25_stats', 79, 69):
+                    save_sure_predictions(db, prediction, country, home, away, score, time)
+                    return True
+                elif good_home_side_mkts(stats, 'under25_stats', 99, 79):
+                    save_sure_predictions(db, prediction, country, home, away, score, time)
+                    return True
+                
+            if good_ovr_mkts(stats, 'under25_stats', 69, 50):
+                save_predictions(db, prediction, country, home, away, score, time)
+                return True
+            
+            elif good_home_side_mkts(stats, 'under25_stats', 69, 50):
+                save_predictions(db, prediction, country, home, away, score, time)
+                return True
+            
+    if prediction['prediction'] in met:
+        save_predictions(db, prediction, country, home, away, score, time)
+        return True
+    
+    return False
+
+
+def good_ovr_mkts(stats, mkt, value, val):
+    home = stats.get(mkt).get('ovr').get('home')
+    away = stats.get(mkt).get('ovr').get('away')
+    h2h = stats.get(mkt).get('ovr').get('h2h')
+
+    if home > value and away > value:
+        return True
+    
+    if h2h > value and (home > val and away > val):
+        return True
+    
+    return False
+
+
+def good_home_side_mkts(stats, mkt, value, val):
+    home = stats.get(mkt).get('home').get('team')
+    h2h_home = stats.get(mkt).get('home').get('h2h')
+    away = stats.get(mkt).get('away').get('team')
+
+    if h2h_home > value and (home > val and away > val):
+        return True
+    
+    return False
+

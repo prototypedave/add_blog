@@ -39,25 +39,22 @@ def is_generated_games_report(page: Page, db):
             ).first()
 
             # Prevents re-running the whole code again
-            if existing_record:
-                markets_to_predict = prediction_markets(h2h(page, link[:link.rfind('#')] + "#/h2h"))
-                mets = perfect_options(h2h(page, link[:link.rfind('#')] + "#/h2h"))
+            if not existing_record:
+                h2h_stat = h2h(page, link[:link.rfind('#')] + "#/h2h")
+                markets_to_predict = prediction_markets(h2h_stat)
+                mets = perfect_options(h2h_stat)
+                
                 metrics = get_table_standings(page, link[:link.rfind('#')] + "#/standings/overall", home_team, away_team)
+                
                 # Only predict potential games
-                
-                print(len(metrics))
-                find_accumulators(metrics, mets, db, existing_record.prediction, country, home_team, away_team, score, time, int(existing_record.chance))
-                
-                
-                """if markets_to_predict:
+                if markets_to_predict:
                     # Predict on markets that havent played yet
                     if datetime.strptime(time, "%I:%M %p, %B %d, %Y") > datetime.now():
                         prediction = predict(home_team, away_team, markets_to_predict)
+                        chance = int(prediction['chance'][:-1]) if isinstance(prediction['chance'], str) and prediction['chance'].endswith('%') else int(prediction['chance'])
                         if metrics:
-                            if find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time):
-                                print(f"{home_team}: {prediction}")
+                            find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time, chance, h2h_stat)
 
-                        print(f'{home_team}: {mets}')
                         new_pred = MatchPrediction(
                             league=country,
                             home_team=home_team,
@@ -71,7 +68,7 @@ def is_generated_games_report(page: Page, db):
                         )
                         db.session.add(new_pred)
                         db.session.commit()
-                        print("Saved to db")"""
+                        print("Saved to db")
         except PlaywrightTimeoutError:
             continue
 
