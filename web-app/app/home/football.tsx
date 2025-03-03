@@ -57,20 +57,16 @@ const Football: React.FC = () => {
                 </tbody>
               </table>
             </div>
-
-            {/* Flex container for banner and spacing */}
-            <div className="flex flex-col lg:flex-row mt-8 gap-4">
-              <VIPBanner />
-              <div className="w-full"></div>
-            </div>
-
             <p className="p-4 text-xs text-center text-gray-400">
               {league.league} predictions. {league.league} Both teams to score (BTTS). {league.league} over 2.5 sure predictions. {league.league} 100% sure predictions.
             </p>
           </div>
         ))}
       </div>
-    </div>
+              <VIPBanner />
+          
+        
+      </div>
   );
 };
 
