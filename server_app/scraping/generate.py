@@ -1,6 +1,6 @@
 from playwright.sync_api import Page
 from server_app.algorithms.projected_outcome import prediction_markets
-from server_app.algorithms.analysis import find_accumulators
+from server_app.algorithms.analysis import find_accumulators, check_prediction
 from server_app.algorithms.sure_bet import perfect_options
 from server_app.automation.groq_assistant import predict
 from server_app.models.predictions import MatchPrediction
@@ -50,20 +50,26 @@ def is_generated_games_report(page: Page, db):
                 if markets_to_predict:
                     # Predict on markets that havent played yet
                     if datetime.strptime(time, "%I:%M %p, %B %d, %Y") > datetime.now():
-                        prediction = predict(home_team, away_team, markets_to_predict)
-                        chance = int(prediction['chance'][:-1]) if isinstance(prediction['chance'], str) and prediction['chance'].endswith('%') else int(prediction['chance'])
-                        if metrics:
-                            find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time, chance, h2h_stat)
+                        prediction = predict(home_team, away_team, time, country, markets_to_predict)
+                        print(prediction)
+                        if not any(value is None for value in prediction.values()):
+                            if metrics:
+                                find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time, h2h_stat)
 
                         new_pred = MatchPrediction(
                             league=country,
                             home_team=home_team,
                             away_team=away_team,
-                            prediction=prediction["prediction"],
+                            prediction=check_prediction(prediction),
                             odds=prediction["odds"],
                             result=score,
-                            reason=prediction["reason"],
-                            chance=prediction["chance"],
+                            form=prediction["current form"],
+                            h2h=prediction["head-to-head"],
+                            missing=prediction["injury/suspension"],
+                            home_away=prediction["home/away form"],
+                            matchup=prediction["tactical matchups"],
+                            insights=prediction["expert insights"],
+                            chance=prediction["confidence"]*100,
                             time=time
                         )
                         db.session.add(new_pred)
@@ -155,7 +161,7 @@ def get_table_standings(page: Page, href: str, home: str, away: str):
         played = participant.locator(".table__cell--value").first.inner_text().strip()
         scored, conceeded = format_goals(participant.locator(".table__cell--score").inner_text().strip())
         points = participant.locator(".table__cell--points").inner_text().strip()
-        stats.append({'team' : team, 'played': played, 'scored': scored, 'conceeded': conceeded, 'points': points})
+        stats.append({'team' : team, 'played': int(played), 'scored': scored, 'conceeded': conceeded, 'points': points})
     
     return stats
 

@@ -13,10 +13,15 @@ class AccumulatorPrediction(db.Model):
     prediction = db.Column(db.String(50), nullable=False)
     odds = db.Column(db.String(10), nullable=False)
     result = db.Column(db.String(50), default="-")
-    reason = db.Column(db.Text, nullable=False)
-    chance = db.Column(db.String(10), nullable=False)
+    form = db.Column(db.Text, nullable=False)
+    h2h = db.Column(db.Text, nullable=False)
+    missing = db.Column(db.Text, nullable=False)
+    home_away = db.Column(db.Text, nullable=False)
+    matchup = db.Column(db.Text, nullable=False)
+    insights = db.Column(db.Text, nullable=False)
+    chance = db.Column(db.Double(10))
     time = db.Column(db.String(20), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow) 
+    created_at = db.Column(db.DateTime, default=datetime.now) 
 
     def to_dict(self):
         return {
@@ -25,9 +30,14 @@ class AccumulatorPrediction(db.Model):
             "homeTeam": self.home_team,
             "awayTeam": self.away_team,
             "prediction": self.prediction,
+            "form": self.form,
+            "h2h": self.h2h,
+            "missing": self.missing,
+            "home_away": self.home_away,
+            "matchup": self.matchup,
+            "insights": self.insights,
             "odds": self.odds,
             "result": self.result,
-            "reason": self.reason,
             "chance": self.chance,
             "time": self.time,
         }

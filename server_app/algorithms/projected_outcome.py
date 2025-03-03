@@ -23,28 +23,28 @@ def get_winner(stats):
     away_away_h2h = stats.get('winDrawWin_stats').get('away').get('h2h').get('away')
 
     # If home team favorite
-    if form_advantange(home_ovr, away_ovr, h2h_home, 'home win'):
-        return form_advantange(home_ovr, away_ovr, h2h_home, 'home win')
+    if form_advantange(home_ovr, away_ovr, h2h_home, 'full time match result'):
+        return form_advantange(home_ovr, away_ovr, h2h_home, 'full time match result')
 
     # Away favourite
-    if form_advantange(away_ovr, home_ovr, h2h_away, 'away_win'):
-        return form_advantange(away_ovr, home_ovr, h2h_away, 'away win')
+    if form_advantange(away_ovr, home_ovr, h2h_away, 'full time match result'):
+        return form_advantange(away_ovr, home_ovr, h2h_away, 'full time match result')
 
     # Poor recent performance but still favorite to win
-    if h2h_advantange(home_ovr, away_ovr, h2h_home, 'home win'):
-        return h2h_advantange(home_ovr, away_ovr, h2h_home, 'away win')
+    if h2h_advantange(home_ovr, away_ovr, h2h_home, 'full time match result'):
+        return h2h_advantange(home_ovr, away_ovr, h2h_home, 'full time match result')
     
     # Away favourite
-    if h2h_advantange(away_ovr, home_ovr, h2h_away, 'away win'):
-        return h2h_advantange(away_ovr, home_ovr, h2h_away, 'away win')
+    if h2h_advantange(away_ovr, home_ovr, h2h_away, 'full time match result'):
+        return h2h_advantange(away_ovr, home_ovr, h2h_away, 'full time match result')
 
     # Poor overall performance but good location perf
-    if based_on_side_advantange(home_home, home_home_h2h, 'home win'):
-        return based_on_side_advantange(home_home, home_home_h2h, 'home win')
+    if based_on_side_advantange(home_home, home_home_h2h, 'full time match result'):
+        return based_on_side_advantange(home_home, home_home_h2h, 'full time match result')
 
     # Away favourite
-    if based_on_side_advantange(away_away, away_away_h2h, 'away win'):
-        return based_on_side_advantange(away_away, away_away_h2h, 'away win')
+    if based_on_side_advantange(away_away, away_away_h2h, 'full time match result'):
+        return based_on_side_advantange(away_away, away_away_h2h, 'full time match result')
 
     return ""
             
@@ -88,15 +88,15 @@ def prediction_markets(stats):
     if get_winner(stats):
         markets.append(get_winner(stats))
     
-    if get_other_markets(stats, 'btts_stats', 'btts yes'):
-        markets.append(get_other_markets(stats, 'btts_stats', 'btts yes'))
+    if get_other_markets(stats, 'btts_stats', 'btts'):
+        markets.append(get_other_markets(stats, 'btts_stats', 'btts'))
 
     if get_other_markets(stats, 'ng_stats', 'btts no'):
-        markets.append(get_other_markets(stats, 'ng_stats', 'btts no'))
+        markets.append(get_other_markets(stats, 'ng_stats', 'btts'))
 
-    if get_other_markets(stats, 'over25_stats', 'over 2.5'):
-        markets.append(get_other_markets(stats, 'over25_stats', 'over 2.5'))
+    if get_other_markets(stats, 'over25_stats', 'total 2.5'):
+        markets.append(get_other_markets(stats, 'over25_stats', 'total 2.5'))
 
     if get_other_markets(stats, 'under25_stats', 'under 2.5'):
-        markets.append(get_other_markets(stats, 'under25_stats', 'under 2.5'))
+        markets.append(get_other_markets(stats, 'under25_stats', 'total 2.5'))
     return markets

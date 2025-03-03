@@ -6,6 +6,7 @@ from .scheduler import start_scheduler
 from .models.predictions import MatchPrediction
 from .models.sure import SurePrediction
 from .models.accumulator import AccumulatorPrediction
+from .models.best_picks import BestPicksPrediction
 
 app = Flask(__name__)
 CORS(app)
@@ -118,6 +119,40 @@ def get_sure():
         if most_recent_date:
             predictions = AccumulatorPrediction.query.filter(
                 db.func.date(AccumulatorPrediction.created_at) == most_recent_date[0]
+            ).all()
+
+    # Prepare the response data
+    response_data = {}
+
+    for match in predictions:
+        if match.league not in response_data:
+            response_data[match.league] = []
+        response_data[match.league].append(match.to_dict())
+
+    final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
+
+    return jsonify(final_response)
+
+
+@app.route('/api/best-predictions', methods=['GET'])
+def get_best():
+    today = datetime.now().date()
+
+    # Query for today's predictions
+    predictions = BestPicksPrediction.query.filter(
+        db.func.date(BestPicksPrediction.created_at) == today
+    ).all()
+
+    # If no predictions exist for today, fetch the latest day with predictions
+    if not predictions:
+        # Find the most recent date with predictions
+        most_recent_date = db.session.query(
+            db.func.date(BestPicksPrediction.created_at)
+        ).order_by(db.func.date(BestPicksPrediction.created_at).desc()).first()
+
+        if most_recent_date:
+            predictions = BestPicksPrediction.query.filter(
+                db.func.date(BestPicksPrediction.created_at) == most_recent_date[0]
             ).all()
 
     # Prepare the response data
