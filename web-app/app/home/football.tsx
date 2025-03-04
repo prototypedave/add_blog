@@ -7,6 +7,7 @@ import Navbar from "~/components/navbar";
 import VIPBanner from "~/components/banner";
 import SureTipsAd from "~/components/notify";
 import BetForm from "~/components/trackRecord";
+import BestPick from "~/components/bestPicks";
 
 const Football: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -134,7 +135,7 @@ const Football: React.FC = () => {
           </div>
         </div>
         <div className="">
-        Hello
+          <BestPick />
         </div>
       </div>
       <VIPBanner />
