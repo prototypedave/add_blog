@@ -16,7 +16,7 @@ const Football: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col gap-2 pt-[55px] min-h-screen bg-gray-900">
+    <div className="flex flex-col gap-2 pt-[25px] min-h-screen bg-gray-900 lg:px-[80px]">
       <Navbar />
       <div className="p-4">
         {predictions.map((league) => (
@@ -63,9 +63,7 @@ const Football: React.FC = () => {
           </div>
         ))}
       </div>
-              <VIPBanner />
-          
-        
+      <VIPBanner />  
       </div>
   );
 };
