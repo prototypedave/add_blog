@@ -1,5 +1,4 @@
 export default function BetForm() {
-    const today = new Date().toISOString().split('T')[0];
     return (
       <div className="w-full bg-gray-800 shadow-lg relative">
           <div className="flex lg:justify-between justify-center p-2 font-semibold text-green-400">
