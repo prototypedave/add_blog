@@ -7,13 +7,13 @@ const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-gray-800 text-green-400 shadow-md">
-      <div className="flex items-center justify-between sm:justify-start">
+    <nav className="w-full bg-gray-800 text-green-400 shadow-md">
+      <div className="flex items-center justify-between sm:justify-start px-4">
         {/* Logo */}
         <Link to="/">
           <img src={homeLogo} alt="betting tips icon" className="h-[100px] sm:h-[100px] w-[100px] sm:w-[100px]" />
         </Link>
-        <h1>PROTO PREDICTS</h1>
+        <h1 className="py-4 px-2 text-yellow-400 text-2xl font-bold">PROTO PREDICTS</h1>
 
         {/* Mobile Menu Button */}
         <button
