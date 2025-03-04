@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react"; // Install lucide-react for icons
-import homeLogo from "./pred_logo.svg";
+import { Menu, X } from "lucide-react"; 
+import homeLogo from "./logo.svg";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-gray-800 text-green-400 shadow-md">
-      <div className="flex items-center justify-between sm:justify-start px-4 py-3">
+      <div className="flex items-center justify-between sm:justify-start">
         {/* Logo */}
         <Link to="/">
-          <img src={homeLogo} alt="betting tips icon" className="h-[40px] sm:h-[50px] w-[150px] sm:w-[200px]" />
+          <img src={homeLogo} alt="betting tips icon" className="h-[100px] sm:h-[100px] w-[100px] sm:w-[100px]" />
         </Link>
+        <h1>PROTO PREDICTS</h1>
 
         {/* Mobile Menu Button */}
         <button
