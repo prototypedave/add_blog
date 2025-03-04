@@ -2,12 +2,18 @@ export default function BetForm() {
     const today = new Date().toISOString().split('T')[0];
     return (
       <div className="w-full bg-gray-800 shadow-lg relative">
-          <div className="flex justify-between p-2 font-semibold text-green-400">
+          <div className="flex lg:justify-between justify-center p-2 font-semibold text-green-400">
               <h2 className="p-2">Slips Record</h2>
               <span className="bg-gray-900 p-2 rounded-lg">coming soon</span>
           </div>
-          <div className="border border-gray-900 mx-2"></div>
-          <div className="p-4 text-sm">
+          <div className="lg:border lg:border-gray-900 lg:mx-2"></div>
+          
+          {/* Mobile & Tablet*/}
+          <div className="sm:block lg:hidden p-4 text-sm cursor-pointer flex justify-center items-center lg:bg-gray-700 text-white font-semibold rounded-md">
+            <p className="my-2 font-semibold text-center">Want to maximize your win? Subscribe today to unlock sure tips and Accumulator tips that are well analyzed</p>
+          </div>
+          
+          <div className="hidden lg:block p-4 text-sm">
               <p className="my-2 font-semibold">Betting tips form from our system</p>
               <div className="flex w-full text-xs">
                   <div className="flex flex-col gap-1 w-full">

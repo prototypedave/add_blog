@@ -20,8 +20,8 @@ const Football: React.FC = () => {
   return (
     <div className="flex flex-col gap-2 pt-[25px] bg-gray-900 lg:px-[80px]">
       <Navbar />
-      <div className="grid grid-cols-5 gap-4 w-full">
-        <div className="flex flex-col gap-4">
+      <div className="flex flex-col lg:grid-cols-5 gap-4 w-full">
+        <div className="flex flex-col gap-4 px-4 lg:px-0">
           <SureTipsAd />
           <BetForm />
         </div>
