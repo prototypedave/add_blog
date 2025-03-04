@@ -5,6 +5,8 @@ import { fetchPredictions, setSelectedMatch } from "../redux/predictionsSlice";
 import type { RootState, AppDispatch } from "../redux/store";
 import Navbar from "~/components/navbar";
 import VIPBanner from "~/components/banner";
+import SureTipsAd from "~/components/notify";
+import BetForm from "~/components/trackRecord";
 
 const Football: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -16,9 +18,15 @@ const Football: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col gap-2 pt-[25px] min-h-screen bg-gray-900 lg:px-[80px]">
+    <div className="flex flex-col gap-2 pt-[25px] bg-gray-900 lg:px-[80px]">
       <Navbar />
-      <div className="p-4">
+      <div className="grid grid-cols-5 gap-4 w-full">
+        <div className="flex flex-col gap-4">
+          <SureTipsAd />
+          <BetForm />
+        </div>
+        
+        <div className="col-span-3">
         {predictions.map((league) => (
           <div key={league.league} className="mb-6">
             <h2 className="text-sm sm:text-2xl font-semibold text-white p-2">{league.league}</h2>
@@ -62,6 +70,10 @@ const Football: React.FC = () => {
             </p>
           </div>
         ))}
+        </div>
+        <div className="">
+        Hello
+        </div>
       </div>
       <VIPBanner />  
       </div>
