@@ -87,12 +87,17 @@ const Football: React.FC = () => {
               {!nextPred && 
                 predictions.map((league) => (
                   <div key={league.league} className="mb-6">
-                    <h2 className="text-sm sm:text-2xl font-semibold text-white p-2">{league.league}</h2>
+                    <h2 className="text-sm capitalize text-white p-2">
+                      <span className="font-bold  sm:text-base">
+                        {league.league.split(":")[0]}:
+                      </span>{" "}
+                      {league.league.split(":")[1]}
+                    </h2>
 
                     {/* Responsive Table */}
                     <div className="overflow-x-auto">
                       <table className="w-full mt-2 mb-2 text-xs sm:text-base border-separate border-spacing-0 min-w-[400px]">
-                        <thead className="bg-gray-700 text-green-400">
+                        <thead className="bg-gray-900 text-xs text-green-400">
                           <tr>
                             <th className="px-3 py-2 sm:px-4 sm:py-3 text-left">Time</th>
                             <th className="px-3 py-2 sm:px-4 sm:py-3 text-left">Match</th>
@@ -106,7 +111,7 @@ const Football: React.FC = () => {
                           {league.matches.map((match) => (
                             <tr
                               key={match.id}
-                              className="cursor-pointer even:bg-gray-800 odd:bg-gray-700 text-white hover:bg-green-800 hover:text-black"
+                              className="cursor-pointer text-xs even:bg-gray-800 odd:bg-gray-700 text-white hover:bg-green-800 hover:text-black"
                               onClick={() => {
                                 dispatch(setSelectedMatch(match));
                                 navigate(`/predictions/${match.id}`);
