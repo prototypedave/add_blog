@@ -1,10 +1,12 @@
 from flask import Flask
 from flask_cors import CORS
+from threading import Timer
 from apscheduler.schedulers.background import BackgroundScheduler
 from .routes import register_routes 
 from .storage.database import db
 from .models import register_models
 from .scraping.scrape import flashscore
+
 
 import redis
 
@@ -31,5 +33,8 @@ def create_app():
     if redis_client.set(lock_name, "locked", ex=lock_timeout, nx=True):
         scheduler.add_job(func=flashscore, trigger="interval", hours=6, args=[app, db])
         scheduler.start()
+
+    # Initial run
+    Timer(10, lambda: flashscore(app, db)).start()
 
     return app

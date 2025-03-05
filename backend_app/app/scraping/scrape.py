@@ -13,6 +13,7 @@ def flashscore(app, db):
         with sync_playwright() as p:
             browser = p.chromium.launch()
             page = browser.new_page()
+            print("Scraping data...")
             success = run(page, db)
             browser.close()
 
