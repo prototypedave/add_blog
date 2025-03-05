@@ -2,7 +2,7 @@ from playwright.sync_api import Page
 from server_app.algorithms.projected_outcome import prediction_markets
 from server_app.algorithms.basket import predict_basketball
 from server_app.automation.groq_assistant import predict
-from server_app.models.predictions import MatchPrediction
+from server_app.models.basket import BasketPrediction
 from datetime import datetime
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from sqlalchemy.orm.exc import NoResultFound
@@ -28,15 +28,26 @@ def get_basket(page: Page, db):
             score = page.locator(".detailScore__wrapper").inner_text().strip()
             time = page.locator(".duelParticipant__startTime div").inner_text().strip()
             country = page.locator(".tournamentHeader__country").inner_text().strip()
-            prediction = get_h2h(page, link[:link.rfind('#')] + "#/h2h", home_team, away_team)
-            if prediction:
-                print(f"{prediction} : {home_team}")
-            
-            #
-            #win = get_team_win(h2h, home_team, away_team, time, country)
-            #prediction = get_hockey_prediction(overall_over(h2h), overall_btts(h2h), win)
-            #print(prediction)
+            existing_record = db.session.query(BasketPrediction).filter_by(
+                home_team=home_team,
+                away_team=away_team,
+                time=time
+            ).first()
 
+            if not existing_record:
+                prediction = get_h2h(page, link[:link.rfind('#')] + "#/h2h", home_team, away_team)
+                if prediction:
+                    new_pred = BasketPrediction(
+                        league=country,
+                        home_team=home_team,
+                        away_team=away_team,
+                        result=score,
+                        time=time
+                    )
+                    new_pred.set_prediction(prediction)
+                    db.session.add(new_pred)
+                    db.session.commit()
+            
         except PlaywrightTimeoutError:
             continue
 

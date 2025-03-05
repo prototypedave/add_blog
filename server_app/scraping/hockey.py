@@ -2,7 +2,7 @@ from playwright.sync_api import Page
 from server_app.algorithms.projected_outcome import prediction_markets
 from server_app.algorithms.hockey import get_hockey_prediction
 from server_app.automation.groq_assistant import predict
-from server_app.models.predictions import MatchPrediction
+from server_app.models.hockey import HockeyPrediction
 from datetime import datetime
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from sqlalchemy.orm.exc import NoResultFound
@@ -29,8 +29,24 @@ def get_hockey(page: Page, db):
             country = page.locator(".tournamentHeader__country").inner_text().strip()
             h2h = get_h2h_details(page, link[:link.rfind('#')] + "#/h2h")
             win = get_team_win(h2h, home_team, away_team, time, country)
-            prediction = get_hockey_prediction(overall_over(h2h), overall_btts(h2h), win)
-            print(prediction)
+            existing_record = db.session.query(HockeyPrediction).filter_by(
+                home_team=home_team,
+                away_team=away_team,
+                time=time
+            ).first()
+            if not existing_record:
+                prediction = get_hockey_prediction(overall_over(h2h), overall_btts(h2h), win)
+                if prediction:
+                    new_pred = HockeyPrediction(
+                        league=country,
+                        home_team=home_team,
+                        away_team=away_team,
+                        result=score,
+                        time=time
+                    )
+                    new_pred.set_prediction(prediction)
+                    db.session.add(new_pred)
+                    db.session.commit()
 
         except PlaywrightTimeoutError:
             continue
