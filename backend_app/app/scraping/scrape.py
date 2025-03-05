@@ -1,9 +1,12 @@
 from playwright.sync_api import sync_playwright, Page
 from .basketball.basket import scrape_basketball
+from .hockey.ice_hockey import scrape_hockey
 
 
 def run(page:Page, db):
     scrape_basketball(page, db)
+    scrape_hockey(page, db)
+    
 
 """
     Get flashscore matches for the day
