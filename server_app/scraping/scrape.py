@@ -1,8 +1,12 @@
 from playwright.sync_api import sync_playwright, Page
 from .generate import is_generated_games_report
+from .hockey import get_hockey
+from .basket import get_basket
 
 def run(page:Page, db):
-    return is_generated_games_report(page, db)
+    get_basket(page, db)
+    #get_hockey(page, db)
+    #return is_generated_games_report(page, db)
 
 """
     Get flashscore matches for the day

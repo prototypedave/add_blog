@@ -87,7 +87,7 @@ def find_accumulators(metrics, met, db, prediction, country, home, away, score, 
 
 def assure_team_win(db, prediction, country, home, away, score, time):
     # Check if its a home win
-    if ('full' in prediction['market'] and home in prediction['prediction']) and prediction['confidence'] > 0.64:
+    if ('win' in prediction['market'] and home in prediction['prediction']) and prediction['confidence'] > 0.64:
         if prediction['confidence'] > 0.69:
             save(db, prediction, country, home, away, score, time, AccumulatorPrediction)
             return True
@@ -95,13 +95,13 @@ def assure_team_win(db, prediction, country, home, away, score, time):
         return True
     
     # If away
-    if ('full' in prediction['market'] and away in prediction['prediction']) and prediction['confidence'] > 0.64:
+    if ('win' in prediction['market'] and away in prediction['prediction']) and prediction['confidence'] > 0.64:
         if prediction['confidence'] > 0.69:
             save(db, prediction, country, home, away, score, time, AccumulatorPrediction)
             return True
         save(db, prediction, country, home, away, score, time, BestPicksPrediction)
         return True
-
+    
 
 def accumulator_btts(metrics, met, db, prediction, country, home, away, score, time, stats):
     if float(prediction['confidence']) > 0.65 and ('btts' in prediction['market'] and prediction['prediction']):
@@ -147,7 +147,7 @@ def accumulator_btts(metrics, met, db, prediction, country, home, away, score, t
             return True
             
     if prediction['prediction'] in met:
-        save(db, prediction, country, home, away, score, time, AccumulatorPrediction)
+        save(db, prediction, country, home, away, score, time, BestPicksPrediction)
         return True
     
     return False
@@ -199,7 +199,7 @@ def accumulator_total(metrics, met, db, prediction, country, home, away, score, 
             return True
             
     if prediction['prediction'] in met:
-        save(db, prediction, country, home, away, score, time, AccumulatorPrediction)
+        save(db, prediction, country, home, away, score, time, BestPicksPrediction)
         return True
     
     return False
@@ -230,7 +230,7 @@ def good_home_side_mkts(stats, mkt, value, val):
     return False
 
 def check_prediction(prediction):
-    if 'full' in prediction['market']:
+    if 'win' in prediction['market']:
         return prediction['prediction']
     if 'btts' in prediction['market'] and prediction['prediction']:
         return 'BTTS Yes'

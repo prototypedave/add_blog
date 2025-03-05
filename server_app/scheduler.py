@@ -45,6 +45,6 @@ def start_scheduler(app, db):
         scheduler.start()
 
         # Delay initial execution by 1 minute
-        # Timer(10, lambda: scheduled_task(app, db)).start()
+        Timer(10, lambda: scheduled_task(app, db)).start()
     else:
         print("Scheduler lock not acquired. Another process is running the scheduler.")

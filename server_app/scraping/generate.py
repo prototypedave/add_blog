@@ -22,7 +22,6 @@ def is_generated_games_report(page: Page, db):
     for event in events:
         links.append(event.locator("a").first.get_attribute("href"))
 
-    links = links[::-1]
     for link in links:
         try:
             page.goto(link)
@@ -56,25 +55,25 @@ def is_generated_games_report(page: Page, db):
                             if metrics:
                                 find_accumulators(metrics, mets, db, prediction, country, home_team, away_team, score, time, h2h_stat)
 
-                        new_pred = MatchPrediction(
-                            league=country,
-                            home_team=home_team,
-                            away_team=away_team,
-                            prediction=check_prediction(prediction),
-                            odds=prediction["odds"],
-                            result=score,
-                            form=prediction["current form"],
-                            h2h=prediction["head-to-head"],
-                            missing=prediction["injury/suspension"],
-                            home_away=prediction["home/away form"],
-                            matchup=prediction["tactical matchups"],
-                            insights=prediction["expert insights"],
-                            chance=prediction["confidence"]*100,
-                            time=time
-                        )
-                        db.session.add(new_pred)
-                        db.session.commit()
-                        print("Saved to db")
+                            new_pred = MatchPrediction(
+                                league=country,
+                                home_team=home_team,
+                                away_team=away_team,
+                                prediction=check_prediction(prediction),
+                                odds=prediction["odds"],
+                                result=score,
+                                form=prediction["current form"],
+                                h2h=prediction["head-to-head"],
+                                missing=prediction["injury/suspension"],
+                                home_away=prediction["home/away form"],
+                                matchup=prediction["tactical matchups"],
+                                insights=prediction["expert insights"],
+                                chance=prediction["confidence"]*100,
+                                time=time
+                            )
+                            db.session.add(new_pred)
+                            db.session.commit()
+                            print("Saved to db")
         except PlaywrightTimeoutError:
             continue
 
