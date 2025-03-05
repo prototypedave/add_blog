@@ -3,6 +3,9 @@ from datetime import datetime
 from storage.database import db
 from models.football.general import GeneralPrediction
 from models.football.sure import SurePrediction
+from models.football.accumulator import AccumulatorPrediction
+from models.football.best import BestPicksPrediction
+
 
 foot_bp = Blueprint('foot_bp', __name__)
 
@@ -70,18 +73,17 @@ def get_sure_pred():
     return jsonify(final_response)
 
 
-@app.route('/api/accu-predictions', methods=['GET'])
-def get_sure():
+@foot_bp.route('/football/accumulator', methods=['GET'])
+def get_accumulator():
+    """
+        API Endpoint for Accumulator bets predictions
+    """
     today = datetime.now().date()
-
-    # Query for today's predictions
     predictions = AccumulatorPrediction.query.filter(
         db.func.date(AccumulatorPrediction.created_at) == today
     ).all()
 
-    # If no predictions exist for today, fetch the latest day with predictions
     if not predictions:
-        # Find the most recent date with predictions
         most_recent_date = db.session.query(
             db.func.date(AccumulatorPrediction.created_at)
         ).order_by(db.func.date(AccumulatorPrediction.created_at).desc()).first()
@@ -91,7 +93,6 @@ def get_sure():
                 db.func.date(AccumulatorPrediction.created_at) == most_recent_date[0]
             ).all()
 
-    # Prepare the response data
     response_data = {}
 
     for match in predictions:
@@ -104,18 +105,17 @@ def get_sure():
     return jsonify(final_response)
 
 
-@app.route('/api/best-predictions', methods=['GET'])
+@foot_bp.route('/football/best', methods=['GET'])
 def get_best():
+    """
+        API Endpoint for Best bets predictions
+    """
     today = datetime.now().date()
-
-    # Query for today's predictions
     predictions = BestPicksPrediction.query.filter(
         db.func.date(BestPicksPrediction.created_at) == today
     ).all()
 
-    # If no predictions exist for today, fetch the latest day with predictions
     if not predictions:
-        # Find the most recent date with predictions
         most_recent_date = db.session.query(
             db.func.date(BestPicksPrediction.created_at)
         ).order_by(db.func.date(BestPicksPrediction.created_at).desc()).first()
@@ -125,7 +125,6 @@ def get_best():
                 db.func.date(BestPicksPrediction.created_at) == most_recent_date[0]
             ).all()
 
-    # Prepare the response data
     response_data = {}
 
     for match in predictions:
