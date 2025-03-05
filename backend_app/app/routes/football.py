@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify
 from datetime import datetime
-from storage.database import db
-from models.football.general import GeneralPrediction
-from models.football.sure import SurePrediction
-from models.football.accumulator import AccumulatorPrediction
-from models.football.best import BestPicksPrediction
+from app.storage.database import db
+from app.models.football.general import GeneralPrediction
+from app.models.football.sure import SurePrediction
+from app.models.football.accumulator import AccumulatorPrediction
+from app.models.football.best import BestPicksPrediction
 
 
 foot_bp = Blueprint('foot_bp', __name__)

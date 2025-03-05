@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from storage.database import db
+from app.storage.database import db
 from datetime import datetime, timedelta
 
 class BestPicksPrediction(db.Model):

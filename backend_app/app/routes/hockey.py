@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 from datetime import datetime
-from storage.database import db
-from models.hockey import HockeyPrediction
+from app.storage.database import db
+from app.models.hockey import HockeyPrediction
 
 hockey_bp = Blueprint('hockey_bp', __name__)
 
