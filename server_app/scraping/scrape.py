@@ -4,7 +4,7 @@ from .hockey import get_hockey
 from .basket import get_basket
 
 def run(page:Page, db):
-    get_basket(page, db)
+    #get_basket(page, db)
     #get_hockey(page, db)
     return is_generated_games_report(page, db)
 

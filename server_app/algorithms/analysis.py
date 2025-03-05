@@ -77,9 +77,10 @@ def save(db, prediction, country, home, away, score, time, table):
 
 
 def find_accumulators(metrics, met, db, prediction, country, home, away, score, time, h2h):
+    if isinstance(prediction['prediction']):
+        if accumulator_btts(metrics, met, db, prediction, country, home, away, score, time, h2h):
+            return
     if assure_team_win(db, prediction, country, home, away, score, time):
-        return
-    if accumulator_btts(metrics, met, db, prediction, country, home, away, score, time, h2h):
         return
     if accumulator_total(metrics, met, db, prediction, country, home, away, score, time, h2h):
         return
