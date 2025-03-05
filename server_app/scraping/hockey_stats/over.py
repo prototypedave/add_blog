@@ -1,13 +1,13 @@
 def overall_over(h2h_list: list):
     home = calculate_percentage_over_45(h2h_list[0]['matches'])
-    away = calculate_percentage_over_45(h2h_list[0]['matches'])
-    h2h = calculate_percentage_over_45(h2h_list[0]['matches'])
+    away = calculate_percentage_over_45(h2h_list[1]['matches'])
+    h2h = calculate_percentage_over_45(h2h_list[2]['matches'])
     
     # Only get over 3.5 if h2h is not 100
     if h2h < 100:
         home = calculate_percentage_over_35(h2h_list[0]['matches'])
-        away = calculate_percentage_over_35(h2h_list[0]['matches'])
-        h2h = calculate_percentage_over_35(h2h_list[0]['matches'])
+        away = calculate_percentage_over_35(h2h_list[1]['matches'])
+        h2h = calculate_percentage_over_35(h2h_list[2]['matches'])
 
         if (h2h > 90 and (home > 79 and away > 79)):
             return 'over 3.5'

@@ -1,7 +1,7 @@
 def overall_btts(h2h_list: list):
     home = calculate_percentage_btts(h2h_list[0]['matches'])
-    away = calculate_percentage_btts(h2h_list[0]['matches'])
-    h2h = calculate_percentage_btts(h2h_list[0]['matches'])
+    away = calculate_percentage_btts(h2h_list[1]['matches'])
+    h2h = calculate_percentage_btts(h2h_list[2]['matches'])
 
     if (h2h > 90 and (home > 79 and away > 79)):
         return 'btts'

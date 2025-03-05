@@ -1,14 +1,15 @@
 from playwright.sync_api import Page
 from server_app.algorithms.projected_outcome import prediction_markets
-from server_app.algorithms.hockey import get_hockey_prediction
+from server_app.algorithms.basket import predict_basketball
 from server_app.automation.groq_assistant import predict
 from server_app.models.predictions import MatchPrediction
 from datetime import datetime
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from sqlalchemy.orm.exc import NoResultFound
-from .hockey_stats.team_win import get_team_win
-from .hockey_stats.btts import overall_btts
-from .hockey_stats.over import overall_over
+from .basket_stats.team_win import get_team_win
+from .basket_stats.handicap import get_handicap_value
+from .basket_stats.over import get_overall_over, get_team_over, define_total_value
+
 
 
 def get_basket(page: Page, db):
@@ -27,8 +28,11 @@ def get_basket(page: Page, db):
             score = page.locator(".detailScore__wrapper").inner_text().strip()
             time = page.locator(".duelParticipant__startTime div").inner_text().strip()
             country = page.locator(".tournamentHeader__country").inner_text().strip()
-            h2h = get_h2h_details(page, link[:link.rfind('#')] + "#/h2h")
-            print(h2h)
+            prediction = get_h2h(page, link[:link.rfind('#')] + "#/h2h", home_team, away_team)
+            if prediction:
+                print(f"{prediction} : {home_team}")
+            
+            #
             #win = get_team_win(h2h, home_team, away_team, time, country)
             #prediction = get_hockey_prediction(overall_over(h2h), overall_btts(h2h), win)
             #print(prediction)
@@ -36,6 +40,24 @@ def get_basket(page: Page, db):
         except PlaywrightTimeoutError:
             continue
 
+def get_h2h(page: Page, link: str, home, away):
+    ovr_link = link + "/overall"
+    home_link = link + "/home"
+    away_link = link + "/away"
+
+    ovr_results  = get_h2h_details(page, ovr_link)
+    home_results = get_h2h_details(page, home_link)
+    away_results = get_h2h_details(page, away_link)
+
+    ovr_total = get_overall_over(ovr_results, home, away)
+    home_total = get_team_over(home_results, home)
+    away_total = get_team_over(away_results, away)
+
+    total = define_total_value(ovr_total, home_total, away_total)
+    hc = get_handicap_value(ovr_results)
+    win = get_team_win(ovr_results, home, away)
+    return predict_basketball(ovr_results, total, hc, win)
+    
 
 def get_h2h_details(page: Page, link: str):
     page.goto(link)
@@ -46,6 +68,7 @@ def get_h2h_details(page: Page, link: str):
         _h2h.append(get_h2h_object(hh))
 
     return _h2h
+
 
 def get_h2h_object(h2h):
     head = h2h.locator("div").first.inner_text().strip()

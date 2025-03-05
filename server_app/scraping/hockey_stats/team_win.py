@@ -14,8 +14,8 @@ def get_team_win(h2h: list, home: str, away: str, time: str, league: str):
 
 def overall_team_win(h2h_list: list):
     home = calculate_percentage_win(h2h_list[0]['matches'])
-    away = calculate_percentage_win(h2h_list[0]['matches'])
-    h2h_home = calculate_percentage_win(h2h_list[0]['matches'])
+    away = calculate_percentage_win(h2h_list[1]['matches'])
+    h2h_home = calculate_percentage_win(h2h_list[2]['matches'])
     h2h_away = 100 - h2h_home
     
     if h2h_home > 90 and (home > 90 and away < 60):
