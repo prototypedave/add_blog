@@ -1,13 +1,12 @@
 from flask import Flask
-from app.routes import main  
+from routes import register_routes 
+from storage.database import db 
 
 def create_app():
     app = Flask(__name__)
-    
-    # Load configuration
-    app.config.from_object("config")
 
-    # Register blueprints
-    app.register_blueprint(main)
+    db.init_app(app)
+    
+    register_routes(app)
 
     return app
