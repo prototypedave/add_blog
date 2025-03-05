@@ -1,4 +1,5 @@
 from playwright.sync_api import Page
+from .h2h import format_score
 
 """
     Return match data
@@ -14,7 +15,7 @@ def match_details(page: Page, href: str):
     return {
         'home': home,
         'away': away,
-        'score': score,
+        'score': format_score(score),
         'time': time,
         'country': country
     }
