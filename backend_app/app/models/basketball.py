@@ -13,6 +13,7 @@ class BasketPrediction(db.Model):
     prediction = db.Column(db.Text, nullable=False)
     result = db.Column(db.String(50), default="-")
     time = db.Column(db.String(20), nullable=False)
+    href = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now) 
 
     def to_dict(self):
@@ -32,6 +33,9 @@ class BasketPrediction(db.Model):
     def get_prediction(self):
         """Convert JSON string back to list when retrieving"""
         return json.loads(self.prediction)
+    
+    def get_link(self):
+        return self.href
     
 
 def delete_basket_predictions(db):

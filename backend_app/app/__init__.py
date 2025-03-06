@@ -6,6 +6,7 @@ from .routes import register_routes
 from .storage.database import db
 from .models import register_models
 from .scraping.scrape import flashscore
+from .scraping.results_scrape import flashscore_results
 
 
 import redis
@@ -32,6 +33,7 @@ def create_app():
     scheduler = BackgroundScheduler()
     if redis_client.set(lock_name, "locked", ex=lock_timeout, nx=True):
         scheduler.add_job(func=flashscore, trigger="interval", hours=6, args=[app, db])
+        scheduler.add_job(func=flashscore_results, trigger="interval", hours=6, args=[app, db])
         scheduler.start()
 
     # Initial run

@@ -1,21 +1,17 @@
 from playwright.sync_api import sync_playwright, Page
-from .basketball.basket import scrape_basketball
-from .hockey.ice_hockey import scrape_hockey
-from .football.football import scrape_football
+from .results.evaluate import update_results
 
 
 def run(page:Page, db):
-    scrape_basketball(page, db)
-    scrape_hockey(page, db)
-    complete = scrape_football(page, db)
-    if complete:
-        print('Finished')
+    update_results(db, page)
+    print('Results Updated')
+    return True
             
 
 """
     Get flashscore matches for the day
 """
-def flashscore(app, db):
+def flashscore_results(app, db):
     with app.app_context():
         with sync_playwright() as p:
             browser = p.chromium.launch()

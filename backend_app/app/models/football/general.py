@@ -21,6 +21,8 @@ class GeneralPrediction(db.Model):
     insights = db.Column(db.Text, nullable=False)
     chance = db.Column(db.Double(10))
     time = db.Column(db.String(20), nullable=False)
+    href = db.Column(db.String(50), nullable=False)
+    won = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.now) 
 
     def to_dict(self):
@@ -41,6 +43,9 @@ class GeneralPrediction(db.Model):
             "chance": self.chance,
             "time": self.time,
         }
+    
+    def get_link(self):
+        return self.href
     
 
 def delete_old_predictions(db):
