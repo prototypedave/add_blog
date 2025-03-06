@@ -32,7 +32,7 @@ def scrape_basketball(page: Page, db):
         for obj in prediction:
             if 'total' in obj:
                 odds = odds_over_under(page, link[:link.rfind('#')] + "#/odds-comparison")
-                if odds and int(odds[0]['over']) < obj['total']:
+                if odds and float(odds[0]['total']) < prediction['total']:
                     create_and_save_prediction(db, match, home, away, score, time, prediction)
                     break  
             else:

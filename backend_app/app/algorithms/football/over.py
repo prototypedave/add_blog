@@ -28,7 +28,7 @@ def get_total_25(stats):
     return None
 
 def get_overall_25(stats):
-    over_25 = stats['over_25']['ovr']
+    over_25 = stats['ovr']
     home = over_25['home']
     away = over_25['away']
     h2h = over_25['h2h']
@@ -37,7 +37,7 @@ def get_overall_25(stats):
 
 
 def get_overall_under_25(stats):
-    over_25 = stats['over_25']['ovr']
+    over_25 = stats['ovr']
     home = over_25['home']
     away = over_25['away']
     h2h = over_25['h2h']
@@ -46,16 +46,16 @@ def get_overall_under_25(stats):
 
 
 def get_home_over_25(stats):
-    over_25 = stats['over_25']['home']
-    home = over_25['home']
+    over_25 = stats['home']
+    home = over_25['team']
     h2h = over_25['h2h']
 
     return perfect_home_25(home, h2h)
 
 
 def get_home_under_25(stats):
-    over_25 = stats['over_25']['home']
-    home = over_25['home']
+    over_25 = stats['home']
+    home = over_25['team']
     h2h = over_25['h2h']
 
     return perfect_home_under_25(home, h2h)

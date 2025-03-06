@@ -28,7 +28,7 @@ def get_btts(stats):
     return None
 
 def get_overall_btts_yes(stats):
-    btts = stats['btts']['ovr']
+    btts = stats['ovr']
     home = btts['home']
     away = btts['away']
     h2h = btts['h2h']
@@ -37,7 +37,7 @@ def get_overall_btts_yes(stats):
 
 
 def get_overall_btts_no(stats):
-    btts = stats['btts']['ovr']
+    btts = stats['ovr']
     home = btts['home']
     away = btts['away']
     h2h = btts['h2h']
@@ -46,16 +46,16 @@ def get_overall_btts_no(stats):
 
 
 def get_home_btts_yes(stats):
-    btts = stats['btts']['home']
-    home = btts['home']
+    btts = stats['home']
+    home = btts['team']
     h2h = btts['h2h']
 
     return perfect_home_btts_yes(home, h2h)
 
 
 def get_home_btts_no(stats):
-    btts = stats['btts']['home']
-    home = btts['home']
+    btts = stats['home']
+    home = btts['team']
     h2h = btts['h2h']
 
     return perfect_home_btts_no(home, h2h)

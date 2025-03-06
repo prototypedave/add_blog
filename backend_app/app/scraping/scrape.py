@@ -5,9 +5,12 @@ from .football.football import scrape_football
 
 
 def run(page:Page, db):
-    #scrape_basketball(page, db)
-    #scrape_hockey(page, db)
-    scrape_football(page, db)
+    scrape_basketball(page, db)
+    scrape_hockey(page, db)
+    complete = scrape_football(page, db)
+    if complete:
+        print('Finished')
+        
     
 
 """

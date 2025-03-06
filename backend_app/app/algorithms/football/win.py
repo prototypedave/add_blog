@@ -15,7 +15,7 @@ def get_winner(stats):
 
 
 def get_overall_winner(stats):
-    win_stats = stats['win_stats']['ovr']  
+    win_stats = stats['ovr']  
     home = win_stats['home']
     away = win_stats['away']
     h2h_home = win_stats['h2h']['home']
@@ -40,10 +40,10 @@ def get_overall_winner(stats):
 
 
 def get_side_win(stats):
-    home = stats.get('win_stats').get('home').get('home')
-    home_h2h = stats.get('win_stats').get('home').get('h2h').get('home')
-    away = stats.get('win_stats').get('away').get('away')
-    away_h2h = stats.get('win_stats').get('away').get('h2h').get('away')
+    home = stats['home']['team']
+    home_h2h = stats['home']['h2h']
+    away = stats['away']['team']
+    away_h2h = stats['away']['h2h']
 
     winner = best_side_win(home, home_h2h, 'home win')
     if winner:
