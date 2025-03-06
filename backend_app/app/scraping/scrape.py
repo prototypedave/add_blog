@@ -1,11 +1,13 @@
 from playwright.sync_api import sync_playwright, Page
 from .basketball.basket import scrape_basketball
 from .hockey.ice_hockey import scrape_hockey
+from .football.football import scrape_football
 
 
 def run(page:Page, db):
-    scrape_basketball(page, db)
-    scrape_hockey(page, db)
+    #scrape_basketball(page, db)
+    #scrape_hockey(page, db)
+    scrape_football(page, db)
     
 
 """

@@ -10,7 +10,7 @@ from .h2h import h2h_hockey
     Gets flashscore data for basketball
 """
 def scrape_hockey(page: Page, db):
-    events = get_events(page=page, href="https://www.flashscore.co.ke/basketball/")
+    events = get_events(page=page, href="https://www.flashscore.co.ke/ice-hockey/")
     for link in events:
         match = match_details(page, link)
 

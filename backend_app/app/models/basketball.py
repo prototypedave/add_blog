@@ -10,7 +10,7 @@ class BasketPrediction(db.Model):
     league = db.Column(db.String(100), nullable=False)
     home_team = db.Column(db.String(100), nullable=False)
     away_team = db.Column(db.String(100), nullable=False)
-    prediction = db.Column(db.String(500), nullable=False)
+    prediction = db.Column(db.Text, nullable=False)
     result = db.Column(db.String(50), default="-")
     time = db.Column(db.String(20), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now) 
@@ -21,7 +21,7 @@ class BasketPrediction(db.Model):
             "league": self.league,
             "homeTeam": self.home_team,
             "awayTeam": self.away_team,
-            "prediction": self.prediction,
+            "prediction": self.get_prediction(),
             "result": self.result,
             "time": self.time,
         }
