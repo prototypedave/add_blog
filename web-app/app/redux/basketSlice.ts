@@ -8,8 +8,6 @@ interface Match {
   prediction: string;
   odds: string;
   result: string;
-  reason: string;
-  chance: string;
   time: string;
   won: boolean;
 }
@@ -19,32 +17,32 @@ interface League {
   matches: Match[];
 }
 
-interface PredictionsState {
+interface BasketState {
   data: League[];
   previousData: League[];
   selectedMatch: Match | null;
   lastFetched: number | null;
 }
 
-const initialState: PredictionsState = {
+const initialState: BasketState = {
   data: [],
   previousData: [],
   selectedMatch: null,
   lastFetched: null,
 };
 
-// Fetch predictions (optimized)
-export const fetchPredictions = createAsyncThunk(
-  "predictions/fetchPredictions",
+
+export const fetchBasketPredictions = createAsyncThunk(
+  "predictions/fetchBasketPredictions",
   async (_, { dispatch, getState }) => {
-    const storedData = localStorage.getItem("predictionsData");
-    const storedTimestamp = localStorage.getItem("predictionsTimestamp");
+    const storedData = localStorage.getItem("basketData");
+    const storedTimestamp = localStorage.getItem("basketTimestamp");
     const lastFetched = storedTimestamp ? parseInt(storedTimestamp, 10) : 0;
 
     const now = Date.now();
     const fiveUTC = new Date();
     fiveUTC.setUTCHours(5, 0, 0, 0);
-    const oneDay = 24 * 60 * 60 * 1000; // 1 day in milliseconds
+    const oneDay = 24 * 60 * 60 * 1000; 
 
     const state: any = getState();
     const currentData = state.predictions.data;
@@ -52,23 +50,23 @@ export const fetchPredictions = createAsyncThunk(
     // Use cached data if it's still valid
     if (storedData && now - lastFetched < oneDay && now < fiveUTC.getTime()) {
       console.log("Using cached data for today's predictions");
-      dispatch(setPredictions(JSON.parse(storedData)));
+      dispatch(setBasket(JSON.parse(storedData)));
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:5001/api/football/general");
+      const response = await fetch("http://localhost:5001/api/basketball/general");
       const apiData: League[] = await response.json();
 
       // Only update if new data is different
       if (JSON.stringify(apiData) !== JSON.stringify(currentData)) {
         console.log("New predictions found, updating...");
-        localStorage.setItem("predictionsData", JSON.stringify(apiData));
-        localStorage.setItem("predictionsTimestamp", now.toString());
-        dispatch(setPredictions(apiData));
+        localStorage.setItem("basketData", JSON.stringify(apiData));
+        localStorage.setItem("basketTimestamp", now.toString());
+        dispatch(setBasket(apiData));
       } else {
         console.log("No data changes detected, preventing redundant updates");
-        localStorage.setItem("predictionsTimestamp", fiveUTC.getTime().toString());
+        localStorage.setItem("basketTimestamp", fiveUTC.getTime().toString());
       }
     } catch (error) {
       console.error("Failed to fetch today's predictions:", error);
@@ -77,69 +75,69 @@ export const fetchPredictions = createAsyncThunk(
 );
 
 // Fetch previous predictions (optimized)
-export const fetchPreviousPredictions = createAsyncThunk(
+export const fetchPreviousBasketballPredictions = createAsyncThunk(
   "predictions/fetchPreviousPredictions",
   async (_, { dispatch }) => {
-    const storedPreviousData = localStorage.getItem("previousPredictions");
+    const storedPreviousData = localStorage.getItem("previousBasket");
 
     if (storedPreviousData) {
       console.log("Using cached previous predictions");
-      dispatch(setPreviousPredictions(JSON.parse(storedPreviousData)));
+      dispatch(setPreviousBasket(JSON.parse(storedPreviousData)));
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:5001/api/football/general/previous");
+      const response = await fetch("http://localhost:5001/api/basketball/general/previous");
       const data: League[] = await response.json();
 
       console.log("Fetched previous predictions");
-      localStorage.setItem("previousPredictions", JSON.stringify(data));
-      dispatch(setPreviousPredictions(data));
+      localStorage.setItem("previousBasket", JSON.stringify(data));
+      dispatch(setPreviousBasket(data));
     } catch (error) {
       console.error("Failed to fetch previous predictions:", error);
     }
   }
 );
 
-const predictionsSlice = createSlice({
-  name: "predictions",
+const basketSlice = createSlice({
+  name: "basket",
   initialState,
   reducers: {
-    setPredictions: (state, action: PayloadAction<League[]>) => {
+    setBasket: (state, action: PayloadAction<League[]>) => {
       if (state.data.length > 0) {
         state.previousData = JSON.parse(JSON.stringify(state.data)); // Create a deep copy
-        localStorage.setItem("previousPredictions", JSON.stringify(state.previousData));
+        localStorage.setItem("previousBasket", JSON.stringify(state.previousData));
       }
       state.data = action.payload;
       state.lastFetched = Date.now();
     },
         
-    setPreviousPredictions: (state, action: PayloadAction<League[]>) => {
+    setPreviousBasket: (state, action: PayloadAction<League[]>) => {
       state.previousData = action.payload;
     },
     setSelectedMatch: (state, action: PayloadAction<Match | null>) => {
       state.selectedMatch = action.payload;
     },
-    clearPreviousPredictions: (state) => {
+    clearPreviousBasket: (state) => {
       state.previousData = [];
-      localStorage.removeItem("previousPredictions");
+      localStorage.removeItem("previousBasket");
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchPredictions.fulfilled, () => {
+    builder.addCase(fetchBasketPredictions.fulfilled, () => {
       console.log("Today's predictions fetched successfully");
     });
-    builder.addCase(fetchPreviousPredictions.fulfilled, () => {
+    builder.addCase(fetchPreviousBasketballPredictions.fulfilled, () => {
       console.log("Previous predictions fetched successfully");
     });
   },
 });
 
 export const {
-  setPredictions,
-  setPreviousPredictions,
+  setBasket,
+  setPreviousBasket,
   setSelectedMatch,
-  clearPreviousPredictions,
-} = predictionsSlice.actions;
+  clearPreviousBasket,
+} = basketSlice.actions;
 
-export default predictionsSlice.reducer;
+export default basketSlice.reducer;

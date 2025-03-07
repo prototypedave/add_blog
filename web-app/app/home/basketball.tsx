@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchPredictions, setSelectedMatch, fetchPreviousPredictions } from "../redux/predictionsSlice";
+import { fetchBasketPredictions, setSelectedMatch, fetchPreviousBasketballPredictions } from "../redux/basketSlice";
 import type { RootState, AppDispatch } from "../redux/store";
 import Navbar from "~/components/navbar";
 import VIPBanner from "~/components/banner";
@@ -11,32 +11,31 @@ import BestPick from "~/components/bestPicks";
 
 const BasketBall: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const predictions = useSelector((state: RootState) => state.predictions.data);
+  const predictions = useSelector((state: RootState) => state.basket.data);
+  const prevPredictions = useSelector((state: RootState) => state.basket.previousData);
   const [isPrevious, setIsPrevious] = useState(false);
   const [nextPred, setNextPred] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isPrevious) {
-      dispatch(fetchPredictions());
-    } else {
-      dispatch(fetchPreviousPredictions());
-    }
-  }, [dispatch, isPrevious]);
+      if (isPrevious && prevPredictions.length === 0) {
+        dispatch(fetchPreviousBasketballPredictions());
+      } else if (!isPrevious && predictions.length === 0) {
+        dispatch(fetchBasketPredictions());
+      }
+    }, [dispatch, isPrevious, prevPredictions, predictions]);
 
   const handlePrev = () => {
     if (nextPred) {
       setNextPred(false);
     } else {
       setIsPrevious(true);
-      dispatch(fetchPreviousPredictions());
     }
   };
 
   const handleNext = () => {
     if (isPrevious) {
       setIsPrevious(false);
-      dispatch(fetchPredictions());
     } else {
       setNextPred(true);
     }
@@ -104,7 +103,6 @@ const BasketBall: React.FC = () => {
                             <th className="px-3 py-2 sm:px-4 sm:py-3 text-left">Match</th>
                             <th className="px-3 py-2 sm:px-4 sm:py-3 text-left">Prediction</th>
                             <th className="px-3 py-2 sm:px-4 sm:py-3 text-left">Odds</th>
-                            <th className="px-3 py-2 sm:px-4 sm:py-3 text-left">%</th>
                             <th className="px-3 py-2 sm:px-4 sm:py-3 text-left">Results</th>
                           </tr>
                         </thead>
@@ -122,7 +120,6 @@ const BasketBall: React.FC = () => {
                               <td className="px-3 py-2 sm:px-4 sm:py-3">{match.homeTeam} v {match.awayTeam}</td>
                               <td className="px-3 py-2 sm:px-4 sm:py-3">{match.prediction}</td>
                               <td className="px-3 py-2 sm:px-4 sm:py-3">{match.odds}</td>
-                              <td className="px-3 py-2 sm:px-4 sm:py-3">{match.chance}</td>
                               <td className="px-3 py-2 sm:px-4 sm:py-3">{match.result}</td>
                             </tr>
                           ))}

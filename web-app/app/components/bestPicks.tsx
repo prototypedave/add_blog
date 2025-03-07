@@ -8,10 +8,14 @@ const BestPick: React.FC = () => {
     const { data, loading, error } = useSelector((state: RootState) => state.matches);
   
     useEffect(() => {
-      if (data.length === 0) {
+      const lastFetched = localStorage.getItem("matches_timestamp");
+      const isDataStale = !lastFetched || (Date.now() - parseInt(lastFetched, 10)) > 3600 * 1000; 
+    
+      if (isDataStale) {
         dispatch(fetchMatches());
       }
-    }, [dispatch, data]);
+    }, [dispatch]);
+    
   
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;

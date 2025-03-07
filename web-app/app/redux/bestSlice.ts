@@ -4,7 +4,7 @@ export interface Match {
   id: number;
   homeTeam: string;
   awayTeam: string;
-  prediction: string; // Renamed from 'prediction'
+  prediction: string; 
   odds: string;
   result: string;
   reason: string;
@@ -36,11 +36,12 @@ const loadFromLocalStorage = (): League[] => {
 
 // Async thunk to fetch match data
 export const fetchMatches = createAsyncThunk("matches/fetch", async () => {
-  const response = await fetch("https://prototypedave.site/api/best-predictions");
+  const response = await fetch("http://localhost:5001/api/football/best");
   const data: League[] = await response.json();
 
-  // Save to localStorage
+  // Save fetched data and timestamp
   localStorage.setItem("matches", JSON.stringify(data));
+  localStorage.setItem("matches_timestamp", Date.now().toString());
 
   return data;
 });
