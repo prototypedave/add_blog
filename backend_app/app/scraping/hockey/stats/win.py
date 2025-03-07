@@ -6,9 +6,9 @@ def get_team_win(h2h: list, home: str, away: str, time: str, league: str):
         pred = predict_hockey(home, away, time, league)
         if pred:
             if home in pred['predictions'] and mkt == 'home win':
-                return home
+                return 'home win'
             if away in pred['predictions'] and mkt == 'away win':
-                return away
+                return 'away away'
 
     return "" 
 

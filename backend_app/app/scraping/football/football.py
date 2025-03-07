@@ -6,7 +6,7 @@ from datetime import datetime
 from .h2h import get_h2h_football
 from app.automation.groq_assistant import predict
 from app.scraping.standings import get_table_standings
-from .save import accumulators
+from .save import accumulators, football_odds, save
 
 """
     Get flashscore data for football
@@ -28,9 +28,12 @@ def scrape_football(page: Page, db):
         markets = get_h2h_football(page, link[:link.rfind('#')] + "#/h2h", home, away)
         if markets:
             prediction = predict(home, away, time, match['country'], markets)
+            odds = football_odds(prediction, page, link[:link.rfind('#')] + "#/odds-comparison")
+
             if not any(value is None for value in prediction.values()):
                 metrics = get_table_standings(page, link[:link.rfind('#')] + "#/standings/overall")
                 if metrics:
-                    accumulators(db, prediction, match['country'], home, away, score, time, metrics, markets)
+                    accumulators(db, prediction, match['country'], home, away, score, time, metrics, markets, odds, link)
+                save(db, prediction, match['country'], home, away, score, time, odds, link)
 
     return True

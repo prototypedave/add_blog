@@ -37,3 +37,20 @@ def find_sure_bets(prediction, market, metrics):
     }
 
     return conditions.get(prediction, False) if prediction in market else False
+
+
+def convert_sure_bets(prediction, market, metrics):
+    prediction = prediction.lower()  # Ensure lowercase for consistency
+
+    # Extract relevant metrics
+    home, away = metrics
+    home_score, away_score = home['scored'], away['scored']
+    home_conceded, away_conceded = home['conceeded'], away['conceeded']
+    played = home['played']
+
+    expected = played * 3
+    if 'over' in prediction and prediction in market:
+        if (home_score + home_conceded) > expected or (away_score + away_conceded) > expected:
+            return True
+        
+    return False

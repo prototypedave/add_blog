@@ -4,7 +4,7 @@ from app.scraping.events import get_events
 from app.scraping.match_details import match_details, is_record_existing, update_score
 from app.models.hockey import HockeyPrediction
 from datetime import datetime
-from .h2h import h2h_hockey
+from .h2h import h2h_hockey, find_odds
 
 """
     Gets flashscore data for basketball
@@ -25,13 +25,15 @@ def scrape_hockey(page: Page, db):
             # Check if a match is viable for prediction
             if datetime.strptime(time, "%d.%m.%Y %H:%M") > datetime.now():
                 prediction = h2h_hockey(page, link[:link.rfind('#')] + "#/h2h", home, away, time, match['country'])
-                if prediction:
+                pred = find_odds(page, link[:link.rfind('#')] + "#/odds-comparison", prediction)
+                if pred:
                     new_pred = HockeyPrediction(
                         league=match['country'],
                         home_team=home,
                         away_team=away,
                         result=score,
-                        time=time
+                        time=time,
+                        href=link
                     )
                     new_pred.set_prediction(prediction)
                     db.session.add(new_pred)

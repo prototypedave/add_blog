@@ -5,9 +5,9 @@ def get_team_win(h2h_list: list, home: str, away: str):
     h2h_away = 100 - h2h_home
 
     if (hm > 90 and h2h_home > 90) and ay < 50:
-        return home
+        return 'home win'
     if (ay > 90 and h2h_away > 90) and hm < 50:
-        return away
+        return 'away win'
     return None
 
 

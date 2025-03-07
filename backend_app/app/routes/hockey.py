@@ -7,7 +7,7 @@ from app.models.poll import poll_database
 hockey_bp = Blueprint('hockey_bp', __name__)
 
 @hockey_bp.route('/ice-hockey/general', methods=['GET'])
-def get_basket():
+def get_hockey():
     """
         API Endpoint for basketball predictions
     """
@@ -19,7 +19,7 @@ def get_basket():
 
 
 @hockey_bp.route('/ice-hockey/general/previous', methods=['GET'])
-def get_basket():
+def get_previous_hockey():
     """
         API Endpoint for basketball predictions
     """

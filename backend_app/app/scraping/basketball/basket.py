@@ -5,7 +5,7 @@ from app.scraping.match_details import match_details, is_record_existing, update
 from app.models.basketball import BasketPrediction
 from datetime import datetime
 from .h2h import get_h2h
-from app.scraping.odds import odds_over_under
+from app.scraping.odds import get_odds
 
 
 """
@@ -31,25 +31,34 @@ def scrape_basketball(page: Page, db):
 
         for obj in prediction:
             if 'total' in obj:
-                odds = odds_over_under(page, link[:link.rfind('#')] + "#/odds-comparison")
-                if odds and float(odds[0]['total']) < prediction['total']:
-                    create_and_save_prediction(db, match, home, away, score, time, prediction)
-                    break  
-            else:
-                create_and_save_prediction(db, match, home, away, score, time, prediction)
+                odds = get_odds(page, link[:link.rfind('#')] + "#/odds-comparison", prediction, 'over_under')
+                print(odds)
+                create_and_save_prediction(db, match, home, away, score, time, prediction, odds, link)
+                break  
+            elif 'handicap' in obj:
+                odds = get_odds(page, link[:link.rfind('#')] + "#/odds-comparison", prediction, 'handicap')
+                print(odds)
+                create_and_save_prediction(db, match, home, away, score, time, prediction, odds, link)
+                break
+            elif 'win' in obj:
+                odds = get_odds(page, link[:link.rfind('#')] + "#/odds-comparison", prediction, 'fulltime')
+                print(odds)
+                create_and_save_prediction(db, match, home, away, score, time, prediction, odds, link)
                 break  
 
         print(f"Home team: {home}, Prediction: {prediction}")
 
     
-def create_and_save_prediction(db, match, home, away, score, time, prediction):
+def create_and_save_prediction(db, match, home, away, score, time, prediction, odds, link):
     """Helper function to create and save a new prediction."""
     new_pred = BasketPrediction(
         league=match['country'],
         home_team=home,
         away_team=away,
         result=score,
-        time=time
+        time=time,
+        odds=odds,
+        href=link,
     )
     new_pred.set_prediction(prediction)
     db.session.add(new_pred)
