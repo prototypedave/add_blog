@@ -79,6 +79,6 @@ def define_total_value(ovr: float, home: object, away: object):
 """
 def total_over(ovr_results, home_results, away_results, home, away):
     ovr_total = get_overall_over(ovr_results, home, away)
-    home_total = get_team_over(home_results, home)
-    away_total = get_team_over(away_results, away)
-    return define_total_value(ovr_total, home_total, away_total)
+    #home_total = get_team_over(home_results, home)
+    #away_total = get_team_over(away_results, away)
+    return ovr_total #define_total_value(ovr_total, home_total, away_total)

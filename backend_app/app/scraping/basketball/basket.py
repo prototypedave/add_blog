@@ -15,12 +15,16 @@ def scrape_basketball(page: Page, db):
     events = get_events(page=page, href="https://www.flashscore.co.ke/basketball/")
 
     for link in events:
-        match = match_details(page, link)
+        try:
+            match = match_details(page, link)
+        except Exception:
+            continue
+        
         home, away, time, score = match['home'], match['away'], match['time'], match['score']
 
-        if is_record_existing(db=db, table=BasketPrediction, home=home, away=away, time=time):
+        """if is_record_existing(db=db, table=BasketPrediction, home=home, away=away, time=time):
             update_score(db=db, table=BasketPrediction, home=home, away=away, time=time, score=score)
-            continue  
+            continue"""  
 
         if datetime.strptime(time, "%d.%m.%Y %H:%M") <= datetime.now():
             continue
@@ -33,17 +37,17 @@ def scrape_basketball(page: Page, db):
             if 'total' in obj:
                 odds = get_odds(page, link[:link.rfind('#')] + "#/odds-comparison", prediction, 'over_under')
                 print(odds)
-                create_and_save_prediction(db, match, home, away, score, time, prediction, odds, link)
+                #create_and_save_prediction(db, match, home, away, score, time, prediction, odds, link)
                 break  
             elif 'handicap' in obj:
                 odds = get_odds(page, link[:link.rfind('#')] + "#/odds-comparison", prediction, 'handicap')
                 print(odds)
-                create_and_save_prediction(db, match, home, away, score, time, prediction, odds, link)
+                #create_and_save_prediction(db, match, home, away, score, time, prediction, odds, link)
                 break
             elif 'win' in obj:
                 odds = get_odds(page, link[:link.rfind('#')] + "#/odds-comparison", prediction, 'fulltime')
                 print(odds)
-                create_and_save_prediction(db, match, home, away, score, time, prediction, odds, link)
+                #create_and_save_prediction(db, match, home, away, score, time, prediction, odds, link)
                 break  
 
         print(f"Home team: {home}, Prediction: {prediction}")

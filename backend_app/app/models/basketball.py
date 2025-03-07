@@ -26,6 +26,7 @@ class BasketPrediction(db.Model):
             "awayTeam": self.away_team,
             "prediction": self.get_prediction(),  
             "result": self.result,
+            "odds": self.odds,
             "time": self.time,
         }
     
@@ -37,11 +38,12 @@ class BasketPrediction(db.Model):
             raise ValueError("Prediction must be a dictionary")
 
     def get_prediction(self):
-        """Convert JSON string back to dictionary when retrieving"""
+        """Convert JSON string back to a formatted list of 'key - value' strings"""
         try:
-            return json.loads(self.prediction)
+            prediction_dict = json.loads(self.prediction)
+            return [f"{key} - {value}" for key, value in prediction_dict.items()]
         except (TypeError, json.JSONDecodeError):
-            return {}  # Return empty dict if decoding fails
+            return []
     
     def get_link(self):
         return self.href

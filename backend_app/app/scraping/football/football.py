@@ -29,11 +29,13 @@ def scrape_football(page: Page, db):
         if markets:
             prediction = predict(home, away, time, match['country'], markets)
             odds = football_odds(prediction, page, link[:link.rfind('#')] + "#/odds-comparison")
+            if not odds:
+                odds = prediction['odds']
 
             if not any(value is None for value in prediction.values()):
                 metrics = get_table_standings(page, link[:link.rfind('#')] + "#/standings/overall")
                 if metrics:
                     accumulators(db, prediction, match['country'], home, away, score, time, metrics, markets, odds, link)
-                save(db, prediction, match['country'], home, away, score, time, odds, link)
+                save(db, prediction, match['country'], home, away, score, time, odds, link, GeneralPrediction)
 
     return True

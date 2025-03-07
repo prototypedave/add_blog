@@ -1,4 +1,3 @@
-from app.models.football.general import GeneralPrediction
 from app.models.football.sure import SurePrediction
 from app.models.football.best import BestPicksPrediction
 from app.models.football.accumulator import AccumulatorPrediction
@@ -28,9 +27,6 @@ def save(db, prediction, country, home, away, score, time, odds, link, table):
     db.session.commit()
 
 def accumulators(db, prediction, country, home, away, score, time, metrics, market, odds, link):
-    if not odds:
-        odds = prediction['odds']
-
     pred = prediction['market']
 
     if prediction['prediction']:
@@ -60,6 +56,6 @@ def football_odds(prediction, page, href):
     if 'win' in prediction['market']:
         return get_odds(page, href, prediction["market"], 'fulltime')
     if 'over' in prediction['market'] or 'under' in prediction['market']:
-        return get_odds(page, href, prediction["market"], 'fulltime')
+        return get_odds(page, href, prediction["market"], 'over_under')
     if 'btts' in prediction['market']:
-        return get_odds(page, href, prediction["market"], 'fulltime')
+        return get_odds(page, href, prediction["market"], 'btts')
