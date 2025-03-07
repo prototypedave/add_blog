@@ -48,10 +48,10 @@ const NavLinks: React.FC = () => (
     <Link to="/" className="hover:bg-gray-700 text-xs lg:hover:bg-transparent pl-4 px-4 py-2 lg:pl-0 lg:px-0  font-bold focus:text-white">FOOTBALL</Link>
     <Link to="/basketball" className="hover:bg-gray-700 text-xs pl-4 px-4 py-2 lg:pl-0 lg:px-0 lg:hover:bg-transparent py-2 font-bold focus:text-white">BASKETBALL</Link>
     <Link to="/ice-hockey" className="hover:bg-gray-700 text-xs pl-4 px-4 py-2 lg:pl-0 lg:px-0 lg:hover:bg-transparent py-2  font-bold focus:text-white">ICE-HOCKEY</Link>
-    <Link to="/" className="hover:bg-gray-700 text-xs lg:hover:bg-transparent pl-4 px-4 py-2 lg:pl-0 lg:px-0 py-2  font-bold focus:text-white">TODAY'S BEST</Link>
-    <Link to="/results" className="hover:bg-gray-700 text-xs pl-4 px-4 py-2 lg:pl-0 lg:px-0 lg:hover:bg-transparent py-2 font-bold focus:text-white">ABOUT</Link>
+    <Link to="/today/best" className="hover:bg-gray-700 text-xs lg:hover:bg-transparent pl-4 px-4 py-2 lg:pl-0 lg:px-0 py-2  font-bold focus:text-white">TODAY'S BEST</Link>
+    <Link to="/about" className="hover:bg-gray-700 text-xs pl-4 px-4 py-2 lg:pl-0 lg:px-0 lg:hover:bg-transparent py-2 font-bold focus:text-white">ABOUT</Link>
     <Link to="/vip" className="hover:bg-gray-700 text-xs pl-4 px-4 py-2 lg:pl-0 lg:px-0 lg:hover:bg-transparent py-2  font-bold focus:text-white">VIP</Link>
-    <Link to="/vip" className="hover:bg-gray-700 text-xs pl-4 px-4 py-2 lg:pl-0 lg:px-0 lg:hover:bg-transparent py-2  font-bold focus:text-white">CONTACT US</Link>
+    <Link to="/contact-us" className="hover:bg-gray-700 text-xs pl-4 px-4 py-2 lg:pl-0 lg:px-0 lg:hover:bg-transparent py-2  font-bold focus:text-white">CONTACT US</Link>
   </>
 );
 

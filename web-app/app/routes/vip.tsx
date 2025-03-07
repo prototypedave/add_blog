@@ -1,5 +1,5 @@
+import VIP from "~/vip/vip";
 import type { Route } from "./+types/home";
-import MatchDetails from "~/components/match";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -10,5 +10,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Match() {
-  return <MatchDetails />;
+  return <VIP />;
 }
