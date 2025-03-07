@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.storage.database import db
 from app.models.hockey import HockeyPrediction
+from app.models.poll import poll_database
 
 hockey_bp = Blueprint('hockey_bp', __name__)
 
@@ -11,25 +12,20 @@ def get_basket():
         API Endpoint for basketball predictions
     """
     today = datetime.now().date()
-    predictions = HockeyPrediction.query.filter(
-        db.func.date(HockeyPrediction.created_at) == today
-    ).all()
+    response_data = poll_database(db=db, table=HockeyPrediction, time=today)
 
-    if not predictions:
-        most_recent_date = db.session.query(
-            db.func.date(HockeyPrediction.created_at)
-        ).order_by(db.func.date(HockeyPrediction.created_at).desc()).first()
+    final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
+    return jsonify(final_response)
 
-        if most_recent_date:
-            predictions = HockeyPrediction.query.filter(
-                db.func.date(HockeyPrediction.created_at) == most_recent_date[0]
-            ).all()
-    response_data = {}
 
-    for match in predictions:
-        if match.league not in response_data:
-            response_data[match.league] = []
-        response_data[match.league].append(match.to_dict())
+@hockey_bp.route('/ice-hockey/general/previous', methods=['GET'])
+def get_basket():
+    """
+        API Endpoint for basketball predictions
+    """
+    today = datetime.now().date()
+    yesterday = today - timedelta(days=1)
+    response_data = poll_database(db=db, table=HockeyPrediction, time=yesterday)
 
     final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
     return jsonify(final_response)

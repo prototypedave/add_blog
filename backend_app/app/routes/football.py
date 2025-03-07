@@ -1,42 +1,36 @@
 from flask import Blueprint, jsonify
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.storage.database import db
 from app.models.football.general import GeneralPrediction
 from app.models.football.sure import SurePrediction
 from app.models.football.accumulator import AccumulatorPrediction
 from app.models.football.best import BestPicksPrediction
-
+from app.models.poll import poll_database
 
 foot_bp = Blueprint('foot_bp', __name__)
 
 @foot_bp.route('/football/general', methods=['GET'])
-def get_match():
+def get_today_match():
     """
         API Endpoint for general predictions
     """
     today = datetime.now().date()
 
-    # Query for today's predictions
-    predictions = GeneralPrediction.query.filter(
-        db.func.date(GeneralPrediction.created_at) == today
-    ).all()
+    response_data = poll_database(db=db, table=GeneralPrediction, time=today)
 
-    # If no predictions exist for today, fetch the latest day with predictions
-    if not predictions:
-        most_recent_date = db.session.query(
-            db.func.date(GeneralPrediction.created_at)
-        ).order_by(db.func.date(GeneralPrediction.created_at).desc()).first()
+    final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
+    return jsonify(final_response)
 
-        if most_recent_date:
-            predictions = GeneralPrediction.query.filter(
-                db.func.date(GeneralPrediction.created_at) == most_recent_date[0]
-            ).all()
-    response_data = {}
 
-    for match in predictions:
-        if match.league not in response_data:
-            response_data[match.league] = []
-        response_data[match.league].append(match.to_dict())
+@foot_bp.route('/football/general/previous', methods=['GET'])
+def get_yesterday_match():
+    """
+        API Endpoint for general predictions
+    """
+    today = datetime.now().date()
+    yesterday = today - timedelta(days=1)
+
+    response_data = poll_database(db=db, table=GeneralPrediction, time=yesterday)
 
     final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
     return jsonify(final_response)
@@ -48,26 +42,20 @@ def get_sure_pred():
         API Endpoint for sure predictions
     """
     today = datetime.now().date()
-    predictions = SurePrediction.query.filter(
-        db.func.date(SurePrediction.created_at) == today
-    ).all()
+    response_data = poll_database(db=db, table=SurePrediction, time=today)
 
-    if not predictions:
-        most_recent_date = db.session.query(
-            db.func.date(SurePrediction.created_at)
-        ).order_by(db.func.date(SurePrediction.created_at).desc()).first()
+    final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
+    return jsonify(final_response)
 
-        if most_recent_date:
-            predictions = SurePrediction.query.filter(
-                db.func.date(SurePrediction.created_at) == most_recent_date[0]
-            ).all()
 
-    response_data = {}
-
-    for match in predictions:
-        if match.league not in response_data:
-            response_data[match.league] = []
-        response_data[match.league].append(match.to_dict())
+@foot_bp.route('/football/sure/previous', methods=['GET'])
+def get_yesterday_sure_pred():
+    """
+        API Endpoint for sure predictions
+    """
+    today = datetime.now().date()
+    yesterday = today - timedelta(days=1)
+    response_data = poll_database(db=db, table=SurePrediction, time=yesterday)
 
     final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
     return jsonify(final_response)
@@ -79,26 +67,21 @@ def get_accumulator():
         API Endpoint for Accumulator bets predictions
     """
     today = datetime.now().date()
-    predictions = AccumulatorPrediction.query.filter(
-        db.func.date(AccumulatorPrediction.created_at) == today
-    ).all()
+    response_data = poll_database(db=db, table=AccumulatorPrediction, time=today)
 
-    if not predictions:
-        most_recent_date = db.session.query(
-            db.func.date(AccumulatorPrediction.created_at)
-        ).order_by(db.func.date(AccumulatorPrediction.created_at).desc()).first()
+    final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
 
-        if most_recent_date:
-            predictions = AccumulatorPrediction.query.filter(
-                db.func.date(AccumulatorPrediction.created_at) == most_recent_date[0]
-            ).all()
+    return jsonify(final_response)
 
-    response_data = {}
 
-    for match in predictions:
-        if match.league not in response_data:
-            response_data[match.league] = []
-        response_data[match.league].append(match.to_dict())
+@foot_bp.route('/football/accumulator/previous', methods=['GET'])
+def get_previous_accumulator():
+    """
+        API Endpoint for Accumulator bets predictions
+    """
+    today = datetime.now().date()
+    yesterday = today - timedelta(days=1)
+    response_data = poll_database(db=db, table=AccumulatorPrediction, time=yesterday)
 
     final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
 
@@ -111,26 +94,21 @@ def get_best():
         API Endpoint for Best bets predictions
     """
     today = datetime.now().date()
-    predictions = BestPicksPrediction.query.filter(
-        db.func.date(BestPicksPrediction.created_at) == today
-    ).all()
+    response_data = poll_database(db=db, table=BestPicksPrediction, time=today)
 
-    if not predictions:
-        most_recent_date = db.session.query(
-            db.func.date(BestPicksPrediction.created_at)
-        ).order_by(db.func.date(BestPicksPrediction.created_at).desc()).first()
+    final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
 
-        if most_recent_date:
-            predictions = BestPicksPrediction.query.filter(
-                db.func.date(BestPicksPrediction.created_at) == most_recent_date[0]
-            ).all()
+    return jsonify(final_response)
 
-    response_data = {}
 
-    for match in predictions:
-        if match.league not in response_data:
-            response_data[match.league] = []
-        response_data[match.league].append(match.to_dict())
+@foot_bp.route('/football/best/previous', methods=['GET'])
+def get_previous_best():
+    """
+        API Endpoint for Best bets predictions
+    """
+    today = datetime.now().date()
+    yesterday = today - timedelta(days=1)
+    response_data = poll_database(db=db, table=BestPicksPrediction, time=yesterday)
 
     final_response = [{"league": league, "matches": matches} for league, matches in response_data.items()]
 
